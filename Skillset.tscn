@@ -1,0 +1,53 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://resources/Senya-s3.png" type="Texture" id=2]
+
+[node name="Skillset" type="MarginContainer"]
+margin_left = 302.0
+margin_right = 788.0
+margin_bottom = 90.0
+
+[node name="NinePatchRect" type="NinePatchRect" parent="."]
+margin_right = 486.0
+margin_bottom = 90.0
+rect_pivot_offset = Vector2( -861, -202 )
+region_rect = Rect2( 488, -14, 1658, 230 )
+
+[node name="Skill Container" type="HBoxContainer" parent="."]
+margin_right = 486.0
+margin_bottom = 90.0
+alignment = 1
+
+[node name="Button" type="Button" parent="Skill Container"]
+margin_right = 94.0
+margin_bottom = 90.0
+icon = ExtResource( 2 )
+flat = true
+
+[node name="Button2" type="Button" parent="Skill Container"]
+margin_left = 98.0
+margin_right = 192.0
+margin_bottom = 90.0
+icon = ExtResource( 2 )
+flat = true
+
+[node name="Button3" type="Button" parent="Skill Container"]
+margin_left = 196.0
+margin_right = 290.0
+margin_bottom = 90.0
+icon = ExtResource( 2 )
+flat = true
+
+[node name="Button4" type="Button" parent="Skill Container"]
+margin_left = 294.0
+margin_right = 388.0
+margin_bottom = 90.0
+icon = ExtResource( 2 )
+flat = true
+
+[node name="Button5" type="Button" parent="Skill Container"]
+margin_left = 392.0
+margin_right = 486.0
+margin_bottom = 90.0
+icon = ExtResource( 2 )
+flat = true
