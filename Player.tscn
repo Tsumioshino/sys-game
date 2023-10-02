@@ -350,8 +350,7 @@ __meta__ = {
 unique_name_in_owner = true
 scale = Vector2( 3.00725, 3.29545 )
 frames = SubResource( 7 )
-animation = "move"
-frame = 3
+animation = "slash"
 
 [node name="AtaqueHit" type="Area2D" parent="Player/SpritesAnimacao"]
 position = Vector2( 31.2578, 5.15862 )

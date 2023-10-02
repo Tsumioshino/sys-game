@@ -2,10 +2,6 @@ extends KinematicBody2D
 
 
 # Declare member variables here. Examples:
-enum States { IDLE, MOVEMENT, GLIDING }
-var state : int = States.IDLE
-
-
 export var direction = Vector2.ZERO
 
 enum Direction { LEFT, RIGHT, UP, DOWN }
@@ -16,8 +12,6 @@ var health = 5
 
 var velocity = 0
 var speed = 400
-
-onready var player = get_node("%Player")
 	
 onready var animation_tree = get_node("%AnimationTree")
 onready var animationState = animation_tree.get("parameters/playback")
@@ -25,7 +19,7 @@ onready var animationState = animation_tree.get("parameters/playback")
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	player.scale.x *= -1 if look_at == Direction.LEFT else 1
+	$Player.scale.x *= -1 if look_at == Direction.LEFT else 1
 	animation_tree.set("parameters/conditions/not_movement", true)
 	animation_tree.active = true
 	
@@ -43,11 +37,11 @@ func _physics_process(delta):
 		if direction.x != input_direction.x:
 			if input_direction.x > 0:
 				if look_at != Direction.RIGHT:
-					get_node("%Player").scale.x *= -1
+					$Player.scale.x *= -1
 					look_at = Direction.RIGHT
 			elif input_direction.x < 0:
 				if look_at != Direction.LEFT:
-					get_node("%Player").scale.x *= -1
+					$Player.scale.x *= -1
 					look_at = Direction.LEFT
 		if direction.y != input_direction.y:
 			if input_direction.y > 0:
@@ -63,8 +57,8 @@ func _physics_process(delta):
 	#print(input_direction)
 	move_and_slide(velocity)
 	
-func take_damage(atk):
-	health -= atk
+func take_damage(_atk):
+	health -= _atk
 	print("poor p1 hp")
 	if health <= 0:
 		animation_tree.set("parameters/conditions/death", true)
