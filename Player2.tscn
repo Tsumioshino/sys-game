@@ -678,7 +678,6 @@ __meta__ = {
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
 position = Vector2( -23, 13 )
-current = true
 __meta__ = {
 "_edit_lock_": true
 }
@@ -717,5 +716,17 @@ anims/idle = SubResource( 70 )
 anims/move = SubResource( 71 )
 anims/slash = SubResource( 72 )
 
+[node name="Node" type="Node" parent="Player"]
+
+[node name="BuffTimer" type="Timer" parent="Player/Node"]
+wait_time = 5.0
+one_shot = true
+
+[node name="DebuffTimer" type="Timer" parent="Player/Node"]
+wait_time = 5.0
+one_shot = true
+
 [connection signal="area_entered" from="Player/SpritesAnimacao/AtaqueHit" to="Player" method="_on_AtaqueHit_area_entered"]
 [connection signal="body_entered" from="Player/SpritesAnimacao/AtaqueHit" to="Player" method="_on_AtaqueHit_body_entered"]
+[connection signal="timeout" from="Player/Node/BuffTimer" to="Player" method="_on_BuffTimer_timeout"]
+[connection signal="timeout" from="Player/Node/DebuffTimer" to="Player" method="_on_DebuffTimer_timeout"]

@@ -22,10 +22,13 @@ var speed_scaling = 3
 var speed = 100 * speed_scaling
 
 onready var player = get_node("%Player")
+onready var btimer = get_node("/root/PlayerRoot/Player/Node/BuffTimer")
+onready var dtimer = get_node("/root/PlayerRoot/Player/Node/DebuffTimer")
 	
 onready var animation_tree = get_node("%AnimationTree")
 onready var animationState = animation_tree.get("parameters/playback")
 
+var isLocalPlayer = !is_network_master()
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -41,8 +44,9 @@ func _process(delta):
 		animation_tree.set("parameters/conditions/attack", false)
 		
 func _physics_process(delta):
-	if is_network_master():
+	if isLocalPlayer:
 		if Input.is_action_just_pressed("change_class"):
+			apply_effect_speed_positive(player)
 			class_count+=1 
 			if class_count > 1: # gambiarra por n usar lista dupla
 				class_count = 0
@@ -67,11 +71,12 @@ func _physics_process(delta):
 					pass
 				elif input_direction.y < 0:
 					pass		
-			direction = input_direction
+			direction = input_direction 
 				
 		else:
 			animation_tree.set("parameters/conditions/not_movement", true)
 			animation_tree.set("parameters/conditions/movement", false)
+		speed = 100 * speed_scaling # this is danger but effects work with this here but thsi is danger
 		velocity = input_direction * speed
 		#print(input_direction)
 		move_and_slide(velocity)
@@ -87,3 +92,29 @@ func _on_AtaqueHit_body_entered(body):
 	if body.is_in_group("hurtbox"):
 		print("where dmg")
 		body.take_damage(atk)    
+		
+# Should be another Scene, probably
+# Effects shouldn't stack
+var has_speed_buff = false
+var has_speed_debuff = false
+
+func apply_effect_speed_positive(_player):
+	if not has_speed_buff:
+		speed_scaling += 2
+		has_speed_buff = true
+		btimer.start()
+		
+func apply_effect_speed_negative(_player):
+	if not has_speed_debuff:
+		speed_scaling -= 2
+		has_speed_debuff = true
+		dtimer.start()
+
+
+func _on_BuffTimer_timeout():
+	speed_scaling -= 2
+	has_speed_buff = false # Replace with function body.
+
+func _on_DebuffTimer_timeout():
+	speed_scaling += 2
+	has_speed_debuff = false # Replace with function body.
