@@ -37,7 +37,7 @@ func _ready():
 	animation_tree.set("parameters/conditions/not_movement", true)
 	animation_tree.active = true
 	add_child(timeratk)
-
+	add_child(timerdash)
 var consecutiveKeyPresses = 0
 var desiredKeyPresses = 2
 
@@ -62,7 +62,19 @@ func _process(delta):
 		animation_tree.set("parameters/conditions/consecutive_atk", false)
 
 					
-		
+var timerdash = Timer.new()
+var consecutiveKeyPresses2 = 0
+var desiredKeyPresses2 = 2	
+var last_input_direction = Vector2(0, 0)  # Variable to track the last input direction
+
+func was_any_input_action_just_pressed(actions):
+	for action in actions:
+		if Input.is_action_just_pressed(action):
+			return true
+	return false
+	
+var dash_press = false
+var gambiarra_actions = ["left2", "right2", "up2", "down2"]
 func _physics_process(delta):
 	if isLocalPlayer:
 		if Input.is_action_just_pressed("change_class"):
@@ -77,6 +89,38 @@ func _physics_process(delta):
 		if input_direction:
 			animation_tree.set("parameters/conditions/not_movement", false)
 			animation_tree.set("parameters/conditions/movement", true)
+			if was_any_input_action_just_pressed(gambiarra_actions):
+				if !animation_tree.get("parameters/conditions/dash"):
+					if timerdash.is_stopped():
+						animation_tree.set("parameters/conditions/dash", false)
+						consecutiveKeyPresses2 = 0
+						timerdash.start(0.4)
+						timerdash.set_one_shot(true)
+					if (input_direction == last_input_direction) and (timerdash.get_time_left() > 0):
+						consecutiveKeyPresses2 +=  1
+					else:
+						animation_tree.set("parameters/conditions/dash", false)
+						consecutiveKeyPresses2 = 0
+					if consecutiveKeyPresses2 >= desiredKeyPresses2:
+						print(direction)
+						var dash_direction = direction
+						var dash_distance = 200  # Adjust as needed
+						var dash_duration = 0.6  # Adjust as needed
+						var dash_target_position = global_position + dash_direction * dash_distance
+						get_node("%Tween").interpolate_property(
+						self,
+						"global_position",
+						global_position,
+						dash_target_position,
+						dash_duration,
+						Tween.TRANS_LINEAR,
+						Tween.EASE_IN_OUT
+						)
+						get_node("%Tween").start()
+						animation_tree.set("parameters/conditions/dash", true)
+					last_input_direction = input_direction
+				else:
+					animation_tree.set("parameters/conditions/dash", false)
 			if direction.x != input_direction.x:
 				if input_direction.x > 0:
 					if look_at != Direction.RIGHT:
@@ -91,11 +135,36 @@ func _physics_process(delta):
 					pass
 				elif input_direction.y < 0:
 					pass		
-			direction = input_direction 
-				
+			direction = input_direction 	
 		else:
 			animation_tree.set("parameters/conditions/not_movement", true)
 			animation_tree.set("parameters/conditions/movement", false)
+			
+
+			if animation_tree.get("parameters/conditions/dash"):
+				# should have some custom logic
+				print(direction)
+				var dash_direction = direction
+				var dash_distance = 200  # Adjust as needed
+				var dash_duration = 0.5  # Adjust as needed
+				var dash_target_position = global_position + dash_direction * dash_distance
+				get_node("%Tween").interpolate_property(
+				self,
+				"global_position",
+				global_position,
+				dash_target_position,
+				dash_duration
+				)
+				get_node("%Tween").interpolate_property(
+				self,
+				"velocity",
+				velocity,
+				0,
+				dash_duration
+				)
+				get_node("%Tween").start()
+				animation_tree.set("parameters/conditions/dash", false)
+
 		speed = 100 * speed_scaling # this is danger but effects work with this here but thsi is danger
 		velocity = input_direction * speed
 		#print(input_direction)
@@ -124,7 +193,6 @@ func _on_AtaqueHit2_body_entered(body):
 var has_speed_buff = false
 var has_speed_debuff = false
 
-onready var blinking = "%BLINK_EFFECT"
 func apply_effect_speed_positive(_player):
 	if not has_speed_buff:
 		speed_scaling += 2

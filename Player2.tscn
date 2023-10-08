@@ -1,4 +1,4 @@
-[gd_scene load_steps=80 format=2]
+[gd_scene load_steps=93 format=2]
 
 [ext_resource path="res://Player2.gd" type="Script" id=1]
 [ext_resource path="res://resources/Warrior/SpriteSheet/Warrior_SheetnoEffect.png" type="Texture" id=2]
@@ -12,6 +12,16 @@
 [ext_resource path="res://resources/Warrior/Individual Sprite/Attack/Warrior_Attack_10.png" type="Texture" id=10]
 [ext_resource path="res://resources/Warrior/Individual Sprite/Attack/Warrior_Attack_11.png" type="Texture" id=11]
 [ext_resource path="res://resources/Warrior/Individual Sprite/Attack/Warrior_Attack_12.png" type="Texture" id=12]
+[ext_resource path="res://resources/Warrior/Individual Sprite/Dash/Warrior_Dash_7.png" type="Texture" id=13]
+[ext_resource path="res://resources/Warrior/Individual Sprite/Dash/Warrior_Dash_2.png" type="Texture" id=14]
+[ext_resource path="res://resources/Warrior/Individual Sprite/Dash/Warrior_Dash_4.png" type="Texture" id=15]
+[ext_resource path="res://resources/Warrior/Individual Sprite/Dash/Warrior_Dash_5.png" type="Texture" id=16]
+[ext_resource path="res://resources/Warrior/Individual Sprite/Dash/Warrior_Dash_3.png" type="Texture" id=17]
+[ext_resource path="res://resources/Warrior/Individual Sprite/Dash/Warrior_Dash_1.png" type="Texture" id=18]
+[ext_resource path="res://resources/Warrior/Individual Sprite/Dash/Warrior_Dash_6.png" type="Texture" id=19]
+
+[sub_resource type="AnimationNodeAnimation" id=81]
+animation = "dash"
 
 [sub_resource type="AnimationNodeAnimation" id=52]
 animation = "dead"
@@ -63,7 +73,6 @@ advance_condition = "consecutive_atk"
 
 [sub_resource type="AnimationNodeStateMachineTransition" id=77]
 switch_mode = 2
-auto_advance = true
 advance_condition = "not_movement"
 
 [sub_resource type="AnimationNodeStateMachineTransition" id=78]
@@ -71,7 +80,23 @@ switch_mode = 2
 auto_advance = true
 advance_condition = "movement"
 
+[sub_resource type="AnimationNodeStateMachineTransition" id=82]
+advance_condition = "dash"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=83]
+switch_mode = 2
+advance_condition = "not_movement"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=85]
+advance_condition = "dash"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=86]
+switch_mode = 2
+advance_condition = "movement"
+
 [sub_resource type="AnimationNodeStateMachine" id=34]
+states/dash/node = SubResource( 81 )
+states/dash/position = Vector2( -149.652, 363.72 )
 states/dead/node = SubResource( 52 )
 states/dead/position = Vector2( 499, 358.72 )
 states/idle/node = SubResource( 30 )
@@ -82,10 +107,10 @@ states/slash/node = SubResource( 31 )
 states/slash/position = Vector2( 504, 264 )
 states/strong_slash/node = SubResource( 75 )
 states/strong_slash/position = Vector2( 504, 139 )
-transitions = [ "idle", "slash", SubResource( 45 ), "slash", "idle", SubResource( 46 ), "idle", "move", SubResource( 48 ), "move", "idle", SubResource( 49 ), "move", "slash", SubResource( 50 ), "slash", "move", SubResource( 51 ), "idle", "dead", SubResource( 53 ), "slash", "dead", SubResource( 54 ), "move", "dead", SubResource( 55 ), "slash", "strong_slash", SubResource( 76 ), "strong_slash", "idle", SubResource( 77 ), "strong_slash", "move", SubResource( 78 ) ]
+transitions = [ "idle", "slash", SubResource( 45 ), "slash", "idle", SubResource( 46 ), "idle", "move", SubResource( 48 ), "move", "idle", SubResource( 49 ), "move", "slash", SubResource( 50 ), "slash", "move", SubResource( 51 ), "idle", "dead", SubResource( 53 ), "slash", "dead", SubResource( 54 ), "move", "dead", SubResource( 55 ), "slash", "strong_slash", SubResource( 76 ), "strong_slash", "idle", SubResource( 77 ), "strong_slash", "move", SubResource( 78 ), "idle", "dash", SubResource( 82 ), "dash", "idle", SubResource( 83 ), "move", "dash", SubResource( 85 ), "dash", "move", SubResource( 86 ) ]
 start_node = "idle"
 end_node = "dead"
-graph_offset = Vector2( -268.652, 48.2735 )
+graph_offset = Vector2( -431.883, 243.389 )
 
 [sub_resource type="AnimationNodeStateMachinePlayback" id=44]
 
@@ -259,6 +284,11 @@ region = Rect2( 345, 572, 69, 44 )
 
 [sub_resource type="SpriteFrames" id=7]
 animations = [ {
+"frames": [ ExtResource( 18 ), ExtResource( 14 ), ExtResource( 17 ), ExtResource( 15 ), ExtResource( 16 ), ExtResource( 19 ), ExtResource( 13 ) ],
+"loop": true,
+"name": "dash",
+"speed": 5.0
+}, {
 "frames": [ SubResource( 56 ), SubResource( 57 ), SubResource( 58 ), SubResource( 59 ), SubResource( 60 ), SubResource( 61 ), SubResource( 62 ), SubResource( 63 ), SubResource( 64 ), SubResource( 65 ), SubResource( 66 ) ],
 "loop": true,
 "name": "dead",
@@ -354,6 +384,33 @@ tracks/4/keys = {
 "transitions": PoolRealArray( 1 ),
 "update": 1,
 "values": [ false ]
+}
+
+[sub_resource type="Animation" id=84]
+resource_name = "dash"
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:animation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ "dash" ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath(".:frame")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 0.1, 0.2, 0.3, 0.4, 0.5 ),
+"transitions": PoolRealArray( 1, 1, 1, 1, 1, 1 ),
+"update": 1,
+"values": [ 1, 2, 3, 4, 5, 6 ]
 }
 
 [sub_resource type="Animation" id=67]
@@ -818,14 +875,16 @@ root_motion_track = NodePath(".")
 parameters/playback = SubResource( 44 )
 parameters/conditions/attack = false
 parameters/conditions/consecutive_atk = false
+parameters/conditions/dash = false
 parameters/conditions/death = false
 parameters/conditions/movement = false
-parameters/conditions/not_movement = false
+parameters/conditions/not_movement = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
 position = Vector2( -23.25, 14.5 )
 z_as_relative = false
 shape = SubResource( 8 )
+disabled = true
 __meta__ = {
 "_edit_lock_": true
 }
@@ -841,6 +900,7 @@ unique_name_in_owner = true
 scale = Vector2( 3.00725, 3.29545 )
 frames = SubResource( 7 )
 animation = "slash"
+frame = 1
 speed_scale = 2.0
 
 [node name="Tween" type="Tween" parent="Player/SpritesAnimacao"]
@@ -875,6 +935,7 @@ disabled = true
 unique_name_in_owner = true
 root_node = NodePath("../SpritesAnimacao")
 anims/RESET = SubResource( 11 )
+anims/dash = SubResource( 84 )
 anims/dead = SubResource( 67 )
 anims/idle = SubResource( 10 )
 anims/move = SubResource( 20 )
@@ -904,5 +965,6 @@ one_shot = true
 [connection signal="area_entered" from="Player/SpritesAnimacao/AtaqueHit" to="Player" method="_on_AtaqueHit_area_entered"]
 [connection signal="body_entered" from="Player/SpritesAnimacao/AtaqueHit" to="Player" method="_on_AtaqueHit_body_entered"]
 [connection signal="body_entered" from="Player/SpritesAnimacao/AtaqueHit2" to="Player" method="_on_AtaqueHit2_body_entered"]
+[connection signal="animation_finished" from="Player/WARRIOR" to="Player" method="_on_WARRIOR_animation_finished"]
 [connection signal="timeout" from="Player/Effect/BuffTimer" to="Player" method="_on_BuffTimer_timeout"]
 [connection signal="timeout" from="Player/Effect/DebuffTimer" to="Player" method="_on_DebuffTimer_timeout"]
