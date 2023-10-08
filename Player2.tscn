@@ -374,7 +374,7 @@ tracks/3/keys = {
 "values": [ true ]
 }
 tracks/4/type = "value"
-tracks/4/path = NodePath("../CollisionShape2D:disabled")
+tracks/4/path = NodePath("../PlayerCollision:disabled")
 tracks/4/interp = 1
 tracks/4/loop_wrap = true
 tracks/4/imported = false
@@ -442,7 +442,7 @@ tracks/1/keys = {
 "values": [ 6, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
 }
 tracks/2/type = "value"
-tracks/2/path = NodePath("../CollisionShape2D:disabled")
+tracks/2/path = NodePath("../PlayerCollision:disabled")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/imported = false
@@ -643,7 +643,7 @@ tracks/2/keys = {
 "values": [ true ]
 }
 tracks/3/type = "value"
-tracks/3/path = NodePath("../CollisionShape2D:disabled")
+tracks/3/path = NodePath("../PlayerCollision:disabled")
 tracks/3/interp = 1
 tracks/3/loop_wrap = true
 tracks/3/imported = false
@@ -696,7 +696,7 @@ tracks/1/keys = {
 "values": [ 6, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
 }
 tracks/2/type = "value"
-tracks/2/path = NodePath("../CollisionShape2D:disabled")
+tracks/2/path = NodePath("../PlayerCollision:disabled")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/imported = false
@@ -880,7 +880,7 @@ parameters/conditions/death = false
 parameters/conditions/movement = false
 parameters/conditions/not_movement = true
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
+[node name="PlayerCollision" type="CollisionShape2D" parent="Player"]
 position = Vector2( -23.25, 14.5 )
 z_as_relative = false
 shape = SubResource( 8 )
@@ -907,7 +907,6 @@ speed_scale = 2.0
 unique_name_in_owner = true
 
 [node name="AtaqueHit" type="Area2D" parent="Player/SpritesAnimacao"]
-visible = false
 position = Vector2( 21.2819, 8.19312 )
 __meta__ = {
 "_edit_lock_": true
@@ -954,17 +953,28 @@ anims/strong_slash = SubResource( 80 )
 
 [node name="Effect" type="Node" parent="Player"]
 
-[node name="BuffTimer" type="Timer" parent="Player/Effect"]
+[node name="Buff" type="Node" parent="Player/Effect"]
+
+[node name="SPD_BUFF" type="Node" parent="Player/Effect/Buff"]
+
+[node name="BuffTimer" type="Timer" parent="Player/Effect/Buff/SPD_BUFF"]
 wait_time = 5.0
 one_shot = true
 
-[node name="DebuffTimer" type="Timer" parent="Player/Effect"]
+[node name="Debuff" type="Node" parent="Player/Effect"]
+
+[node name="SPD_DEBUFF" type="Node" parent="Player/Effect/Debuff"]
+
+[node name="DebuffTimer" type="Timer" parent="Player/Effect/Debuff/SPD_DEBUFF"]
 wait_time = 5.0
 one_shot = true
 
+[connection signal="direction_changed" from="Player" to="Player" method="_on_Player_direction_changed"]
+[connection signal="health_depleted" from="Player" to="Player" method="_on_Player_health_depleted"]
+[connection signal="spd_scaling_changed" from="Player" to="Player" method="_on_Player_spd_scaling_changed"]
 [connection signal="area_entered" from="Player/SpritesAnimacao/AtaqueHit" to="Player" method="_on_AtaqueHit_area_entered"]
 [connection signal="body_entered" from="Player/SpritesAnimacao/AtaqueHit" to="Player" method="_on_AtaqueHit_body_entered"]
 [connection signal="body_entered" from="Player/SpritesAnimacao/AtaqueHit2" to="Player" method="_on_AtaqueHit2_body_entered"]
 [connection signal="animation_finished" from="Player/WARRIOR" to="Player" method="_on_WARRIOR_animation_finished"]
-[connection signal="timeout" from="Player/Effect/BuffTimer" to="Player" method="_on_BuffTimer_timeout"]
-[connection signal="timeout" from="Player/Effect/DebuffTimer" to="Player" method="_on_DebuffTimer_timeout"]
+[connection signal="timeout" from="Player/Effect/Buff/SPD_BUFF/BuffTimer" to="Player" method="_on_BuffTimer_timeout"]
+[connection signal="timeout" from="Player/Effect/Debuff/SPD_DEBUFF/DebuffTimer" to="Player" method="_on_DebuffTimer_timeout"]
