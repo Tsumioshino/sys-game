@@ -3,10 +3,6 @@ extends KinematicBody2D
 # Atributos base
 export var atk = 1
 export var health = 5
-signal health_depleted
-
-func _on_Player_health_depleted():
-	pass # Replace with function body.
 
 # Physics related
 export var direction = Vector2.ZERO
@@ -18,12 +14,12 @@ signal spd_scaling_changed
 
 func _on_Player_spd_scaling_changed():
 	spd = 100 * spd_scaling
+
 # Bonus
 enum Direction { LEFT, RIGHT, UP, DOWN }
 var look_at = Direction.RIGHT
 
 onready var player = get_node("%Player")
-onready var btimer = get_node("%Player/Effect/Buff/SPD_BUFF/BuffTimer")
 onready var dtimer = get_node("%Player/Effect/Debuff/SPD_DEBUFF/DebuffTimer")
 	
 onready var animation_tree = get_node("%AnimationTree")
@@ -38,6 +34,10 @@ func _ready():
 	add_child(timeratk)
 	add_child(timerdash)
 	
+# Efeitos
+signal inventory_buff_added(buff)
+var player_buffs = []
+var player_debuffs = []
 
 # Classes
 enum Class { WARRIOR, THIEF }
@@ -88,8 +88,8 @@ var movement_actions = ["left", "right", "up", "down"]
 
 func activate_dash():
 	var dash_direction = direction
-	var dash_distance = 200  # Adjust as needed
-	var dash_duration = 0.5  # Adjust as needed
+	var dash_distance = 200
+	var dash_duration = 0.5
 	var dash_target_position = global_position + dash_direction * dash_distance
 	get_node("%Tween").interpolate_property(self, "global_position", global_position, dash_target_position, dash_duration)
 	get_node("%Tween").interpolate_property(self, "velocity", velocity, 0, dash_duration)
@@ -180,19 +180,16 @@ func _on_AtaqueHit2_body_entered(body):
 		body.apply_effect_speed_negative(body)    
 		
 # Should be another Scene, probably
-# Effects shouldn't stack
-var has_speed_buff = false
+# Effects shouldn't stack, i think
 var has_speed_debuff = false
 
+# TODO: revive tween KEKW
 func apply_effect_speed_positive(_player):
-	if not has_speed_buff:
-		spd_scaling += 2
-		emit_signal("spd_scaling_changed")
-		has_speed_buff = true
-		btimer.start()
-		get_node("%Tween").interpolate_property(get_node("%Player/SpritesAnimacao"), "self_modulate", Color(0xBBFF8CFF), Color(0xFFFFFFFF), btimer.get_wait_time())
-		get_node("%Tween").start()
-			
+	var buff_instance = load("res://Effect.tscn").instance()
+	var spd_buff = buff_instance.get_node("Buff/SPD_BUFF").duplicate()
+	$Effects.add_child(spd_buff)
+	player_buffs.append(spd_buff)
+
 func apply_effect_speed_negative(_player):
 	if not has_speed_debuff:
 		spd_scaling -= 2
@@ -201,12 +198,6 @@ func apply_effect_speed_negative(_player):
 		dtimer.start()
 		get_node("%Tween").interpolate_property(get_node("%Player/SpritesAnimacao"), "self_modulate", Color(0xFF7777FF), Color(0xFFFFFFFF), dtimer.get_wait_time())
 		get_node("%Tween").start()
-
-
-func _on_BuffTimer_timeout():
-	spd_scaling -= 2
-	emit_signal("spd_scaling_changed")
-	has_speed_buff = false
 
 func _on_DebuffTimer_timeout():
 	spd_scaling += 2
