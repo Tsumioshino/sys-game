@@ -856,9 +856,7 @@ tracks/3/keys = {
 "values": [ true ]
 }
 
-[node name="PlayerRoot" type="Node2D"]
-
-[node name="Player" type="KinematicBody2D" parent="." groups=["hurtbox"]]
+[node name="Player" type="KinematicBody2D" groups=["hurtbox"]]
 unique_name_in_owner = true
 position = Vector2( 81, 48 )
 script = ExtResource( 1 )
@@ -866,7 +864,7 @@ __meta__ = {
 "_edit_lock_": true
 }
 
-[node name="AnimationTree" type="AnimationTree" parent="Player"]
+[node name="AnimationTree" type="AnimationTree" parent="."]
 unique_name_in_owner = true
 tree_root = SubResource( 34 )
 anim_player = NodePath("../WARRIOR")
@@ -880,7 +878,7 @@ parameters/conditions/death = false
 parameters/conditions/movement = false
 parameters/conditions/not_movement = true
 
-[node name="PlayerCollision" type="CollisionShape2D" parent="Player"]
+[node name="PlayerCollision" type="CollisionShape2D" parent="."]
 position = Vector2( -23.25, 14.5 )
 z_as_relative = false
 shape = SubResource( 8 )
@@ -889,13 +887,13 @@ __meta__ = {
 "_edit_lock_": true
 }
 
-[node name="Camera2D" type="Camera2D" parent="Player"]
+[node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2( -23, 13 )
 __meta__ = {
 "_edit_lock_": true
 }
 
-[node name="SpritesAnimacao" type="AnimatedSprite" parent="Player"]
+[node name="SpritesAnimacao" type="AnimatedSprite" parent="."]
 unique_name_in_owner = true
 scale = Vector2( 3.00725, 3.29545 )
 frames = SubResource( 7 )
@@ -903,16 +901,13 @@ animation = "slash"
 frame = 1
 speed_scale = 2.0
 
-[node name="Tween" type="Tween" parent="Player/SpritesAnimacao"]
-unique_name_in_owner = true
-
-[node name="AtaqueHit" type="Area2D" parent="Player/SpritesAnimacao"]
+[node name="AtaqueHit" type="Area2D" parent="SpritesAnimacao"]
 position = Vector2( 21.2819, 8.19312 )
 __meta__ = {
 "_edit_lock_": true
 }
 
-[node name="AtaqueColisao" type="CollisionShape2D" parent="Player/SpritesAnimacao/AtaqueHit"]
+[node name="AtaqueColisao" type="CollisionShape2D" parent="SpritesAnimacao/AtaqueHit"]
 position = Vector2( -0.332527, 0 )
 shape = SubResource( 36 )
 disabled = true
@@ -920,17 +915,19 @@ __meta__ = {
 "_edit_lock_": true
 }
 
-[node name="AtaqueHit2" type="Area2D" parent="Player/SpritesAnimacao"]
+[node name="AtaqueHit2" type="Area2D" parent="SpritesAnimacao"]
 position = Vector2( 21.6144, 8.19312 )
 __meta__ = {
 "_edit_lock_": true
 }
 
-[node name="BonusATKColisao" type="CollisionShape2D" parent="Player/SpritesAnimacao/AtaqueHit2"]
+[node name="BonusATKColisao" type="CollisionShape2D" parent="SpritesAnimacao/AtaqueHit2"]
 shape = SubResource( 36 )
 disabled = true
 
-[node name="WARRIOR" type="AnimationPlayer" parent="Player"]
+[node name="Tween" type="Tween" parent="SpritesAnimacao"]
+
+[node name="WARRIOR" type="AnimationPlayer" parent="."]
 unique_name_in_owner = true
 root_node = NodePath("../SpritesAnimacao")
 anims/RESET = SubResource( 11 )
@@ -941,7 +938,7 @@ anims/move = SubResource( 20 )
 anims/slash = SubResource( 29 )
 anims/strong_slash = SubResource( 79 )
 
-[node name="THIEF" type="AnimationPlayer" parent="Player"]
+[node name="THIEF" type="AnimationPlayer" parent="."]
 unique_name_in_owner = true
 root_node = NodePath("../SpritesAnimacao")
 anims/RESET = SubResource( 68 )
@@ -951,12 +948,12 @@ anims/move = SubResource( 71 )
 anims/slash = SubResource( 72 )
 anims/strong_slash = SubResource( 80 )
 
-[node name="Effects" type="Node" parent="Player"]
+[node name="Effects" type="Node" parent="."]
 
-[connection signal="direction_changed" from="Player" to="Player" method="_on_Player_direction_changed"]
-[connection signal="inventory_buff_added" from="Player" to="Player" method="_on_Player_inventory_buff_added"]
-[connection signal="spd_scaling_changed" from="Player" to="Player" method="_on_Player_spd_scaling_changed"]
-[connection signal="area_entered" from="Player/SpritesAnimacao/AtaqueHit" to="Player" method="_on_AtaqueHit_area_entered"]
-[connection signal="body_entered" from="Player/SpritesAnimacao/AtaqueHit" to="Player" method="_on_AtaqueHit_body_entered"]
-[connection signal="body_entered" from="Player/SpritesAnimacao/AtaqueHit2" to="Player" method="_on_AtaqueHit2_body_entered"]
-[connection signal="animation_finished" from="Player/WARRIOR" to="Player" method="_on_WARRIOR_animation_finished"]
+[connection signal="direction_changed" from="." to="." method="_on_Player_direction_changed"]
+[connection signal="inventory_buff_added" from="." to="." method="_on_Player_inventory_buff_added"]
+[connection signal="spd_scaling_changed" from="." to="." method="_on_Player_spd_scaling_changed"]
+[connection signal="area_entered" from="SpritesAnimacao/AtaqueHit" to="." method="_on_AtaqueHit_area_entered"]
+[connection signal="body_entered" from="SpritesAnimacao/AtaqueHit" to="." method="_on_AtaqueHit_body_entered"]
+[connection signal="body_entered" from="SpritesAnimacao/AtaqueHit2" to="." method="_on_AtaqueHit2_body_entered"]
+[connection signal="animation_finished" from="WARRIOR" to="." method="_on_WARRIOR_animation_finished"]

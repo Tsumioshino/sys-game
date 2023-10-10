@@ -19,16 +19,13 @@ func _on_Player_spd_scaling_changed():
 enum Direction { LEFT, RIGHT, UP, DOWN }
 var look_at = Direction.RIGHT
 
-onready var player = get_node("%Player")
-onready var dtimer = get_node("%Player/Effect/Debuff/SPD_DEBUFF/DebuffTimer")
-	
 onready var animation_tree = get_node("%AnimationTree")
 
 var timeratk = Timer.new()
 
 func _ready():
 	animation_tree.set_animation_player(player_class[class_count]) 
-	player.scale.x *= -1 if look_at == Direction.LEFT else 1
+	scale.x *= -1 if look_at == Direction.LEFT else 1
 	animation_tree.set("parameters/conditions/not_movement", true)
 	animation_tree.active = true
 	add_child(timeratk)
@@ -46,7 +43,7 @@ var class_count = 0
 
 func _class_swap_mechanic_handler():
 	if Input.is_action_just_pressed("change_class"):
-		apply_effect_speed_positive(player)
+		apply_effect_speed_positive(self)
 		class_count += 1 
 		if class_count > player_class.size() - 1:
 			class_count = 0
@@ -179,27 +176,13 @@ func _on_AtaqueHit2_body_entered(body):
 		print("hey")
 		body.apply_effect_speed_negative(body)    
 		
-# Should be another Scene, probably
-# Effects shouldn't stack, i think
-var has_speed_debuff = false
-
-# TODO: revive tween KEKW
 func apply_effect_speed_positive(_player):
 	var buff_instance = load("res://Effect.tscn").instance()
 	var spd_buff = buff_instance.get_node("Buff/SPD_BUFF").duplicate()
 	$Effects.add_child(spd_buff)
-	player_buffs.append(spd_buff)
 
 func apply_effect_speed_negative(_player):
-	if not has_speed_debuff:
-		spd_scaling -= 2
-		emit_signal("spd_scaling_changed")
-		has_speed_debuff = true
-		dtimer.start()
-		get_node("%Tween").interpolate_property(get_node("%Player/SpritesAnimacao"), "self_modulate", Color(0xFF7777FF), Color(0xFFFFFFFF), dtimer.get_wait_time())
-		get_node("%Tween").start()
-
-func _on_DebuffTimer_timeout():
-	spd_scaling += 2
-	emit_signal("spd_scaling_changed")
-	has_speed_debuff = false
+	var debuff_instance = load("res://Effect.tscn").instance()
+	var spd_debuff = debuff_instance.get_node("Debuff/SPD_DEBUFF").duplicate()
+	$Effects.add_child(spd_debuff)
+	player_debuffs.append(spd_debuff)
