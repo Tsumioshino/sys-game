@@ -177,12 +177,12 @@ func _on_AtaqueHit2_body_entered(body):
 		body.apply_effect_speed_negative(body)    
 		
 func apply_effect_speed_positive(_player):
-	var buff_instance = load("res://Effect.tscn").instance()
+	var buff_instance = load("res://player/Effect.tscn").instance()
 	var spd_buff = buff_instance.get_node("Buff/SPD_BUFF").duplicate()
 	$Effects.add_child(spd_buff)
 
 func apply_effect_speed_negative(_player):
-	var debuff_instance = load("res://Effect.tscn").instance()
+	var debuff_instance = load("res://player/Effect.tscn").instance()
 	var spd_debuff = debuff_instance.get_node("Debuff/SPD_DEBUFF").duplicate()
 	$Effects.add_child(spd_debuff)
 	player_debuffs.append(spd_debuff)

@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=2]
 
-[ext_resource path="res://Network.gd" type="Script" id=1]
+[ext_resource path="res://networking/Network.gd" type="Script" id=1]
 [ext_resource path="res://Dummy.gd" type="Script" id=3]
 [ext_resource path="res://resources/icon.png" type="Texture" id=5]
 

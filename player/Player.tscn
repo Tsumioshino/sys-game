@@ -1,6 +1,6 @@
 [gd_scene load_steps=93 format=2]
 
-[ext_resource path="res://Player2.gd" type="Script" id=1]
+[ext_resource path="res://player/Player.gd" type="Script" id=1]
 [ext_resource path="res://resources/Warrior/SpriteSheet/Warrior_SheetnoEffect.png" type="Texture" id=2]
 [ext_resource path="res://resources/Warrior/SpriteSheet/Warrior_Sheet-Effect.png" type="Texture" id=3]
 [ext_resource path="res://resources/Warrior/Individual Sprite (cópia)/idle/Warrior_Idle_2.png" type="Texture" id=4]

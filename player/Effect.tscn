@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=2]
 
-[ext_resource path="res://SPD_BUFF.gd" type="Script" id=1]
-[ext_resource path="res://SPD_DEBUFF.gd" type="Script" id=2]
+[ext_resource path="res://player/SPD_BUFF.gd" type="Script" id=1]
+[ext_resource path="res://player/SPD_DEBUFF.gd" type="Script" id=2]
 
 [node name="Effect" type="Node"]
 
