@@ -1,4 +1,4 @@
-[gd_scene load_steps=93 format=2]
+[gd_scene load_steps=101 format=2]
 
 [ext_resource path="res://player/Player.gd" type="Script" id=1]
 [ext_resource path="res://resources/Warrior/SpriteSheet/Warrior_SheetnoEffect.png" type="Texture" id=2]
@@ -19,12 +19,17 @@
 [ext_resource path="res://resources/Warrior/Individual Sprite/Dash/Warrior_Dash_3.png" type="Texture" id=17]
 [ext_resource path="res://resources/Warrior/Individual Sprite/Dash/Warrior_Dash_1.png" type="Texture" id=18]
 [ext_resource path="res://resources/Warrior/Individual Sprite/Dash/Warrior_Dash_6.png" type="Texture" id=19]
+[ext_resource path="res://resources/Warrior/Individual Sprite/UptoFall/Warrior_UptoFall_2.png" type="Texture" id=20]
+[ext_resource path="res://resources/Warrior/Individual Sprite/UptoFall/Warrior_UptoFall_1.png" type="Texture" id=21]
 
 [sub_resource type="AnimationNodeAnimation" id=81]
 animation = "dash"
 
 [sub_resource type="AnimationNodeAnimation" id=52]
 animation = "dead"
+
+[sub_resource type="AnimationNodeAnimation" id=87]
+animation = "dodge"
 
 [sub_resource type="AnimationNodeAnimation" id=30]
 animation = "idle"
@@ -94,11 +99,27 @@ advance_condition = "dash"
 switch_mode = 2
 advance_condition = "movement"
 
+[sub_resource type="AnimationNodeStateMachineTransition" id=88]
+advance_condition = "dodge"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=89]
+switch_mode = 2
+advance_condition = "movement"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=90]
+advance_condition = "dodge"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=91]
+switch_mode = 2
+advance_condition = "not_movement"
+
 [sub_resource type="AnimationNodeStateMachine" id=34]
 states/dash/node = SubResource( 81 )
 states/dash/position = Vector2( -149.652, 363.72 )
 states/dead/node = SubResource( 52 )
 states/dead/position = Vector2( 499, 358.72 )
+states/dodge/node = SubResource( 87 )
+states/dodge/position = Vector2( -339.293, 243.924 )
 states/idle/node = SubResource( 30 )
 states/idle/position = Vector2( 22, 264 )
 states/move/node = SubResource( 47 )
@@ -107,10 +128,10 @@ states/slash/node = SubResource( 31 )
 states/slash/position = Vector2( 504, 264 )
 states/strong_slash/node = SubResource( 75 )
 states/strong_slash/position = Vector2( 504, 139 )
-transitions = [ "idle", "slash", SubResource( 45 ), "slash", "idle", SubResource( 46 ), "idle", "move", SubResource( 48 ), "move", "idle", SubResource( 49 ), "move", "slash", SubResource( 50 ), "slash", "move", SubResource( 51 ), "idle", "dead", SubResource( 53 ), "slash", "dead", SubResource( 54 ), "move", "dead", SubResource( 55 ), "slash", "strong_slash", SubResource( 76 ), "strong_slash", "idle", SubResource( 77 ), "strong_slash", "move", SubResource( 78 ), "idle", "dash", SubResource( 82 ), "dash", "idle", SubResource( 83 ), "move", "dash", SubResource( 85 ), "dash", "move", SubResource( 86 ) ]
+transitions = [ "idle", "slash", SubResource( 45 ), "slash", "idle", SubResource( 46 ), "idle", "move", SubResource( 48 ), "move", "idle", SubResource( 49 ), "move", "slash", SubResource( 50 ), "slash", "move", SubResource( 51 ), "idle", "dead", SubResource( 53 ), "slash", "dead", SubResource( 54 ), "move", "dead", SubResource( 55 ), "slash", "strong_slash", SubResource( 76 ), "strong_slash", "idle", SubResource( 77 ), "strong_slash", "move", SubResource( 78 ), "idle", "dash", SubResource( 82 ), "dash", "idle", SubResource( 83 ), "move", "dash", SubResource( 85 ), "dash", "move", SubResource( 86 ), "move", "dodge", SubResource( 88 ), "dodge", "move", SubResource( 89 ), "idle", "dodge", SubResource( 90 ), "dodge", "idle", SubResource( 91 ) ]
 start_node = "idle"
 end_node = "dead"
-graph_offset = Vector2( -400.293, 159.577 )
+graph_offset = Vector2( -400.293, 203.562 )
 
 [sub_resource type="AnimationNodeStateMachinePlayback" id=44]
 
@@ -294,6 +315,11 @@ animations = [ {
 "name": "dead",
 "speed": 5.0
 }, {
+"frames": [ ExtResource( 21 ), ExtResource( 20 ) ],
+"loop": true,
+"name": "dodge",
+"speed": 5.0
+}, {
 "frames": [ SubResource( 1 ), SubResource( 2 ), SubResource( 3 ), SubResource( 4 ), SubResource( 5 ), SubResource( 6 ) ],
 "loop": true,
 "name": "idle",
@@ -360,6 +386,30 @@ tracks/2/keys = {
 "transitions": PoolRealArray( 1 ),
 "update": 1,
 "values": [ false ]
+}
+tracks/3/type = "value"
+tracks/3/path = NodePath(".:animation")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ "dodge" ]
+}
+tracks/4/type = "value"
+tracks/4/path = NodePath(".:frame")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ 1 ]
 }
 
 [sub_resource type="Animation" id=84]
@@ -428,6 +478,34 @@ tracks/2/keys = {
 "transitions": PoolRealArray( 1 ),
 "update": 1,
 "values": [ true ]
+}
+
+[sub_resource type="Animation" id=92]
+resource_name = "dodge"
+length = 0.2
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:animation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ "dodge" ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath(".:frame")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 0.1 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 0, 1 ]
 }
 
 [sub_resource type="Animation" id=10]
@@ -851,6 +929,7 @@ parameters/conditions/attack = false
 parameters/conditions/consecutive_atk = false
 parameters/conditions/dash = false
 parameters/conditions/death = false
+parameters/conditions/dodge = false
 parameters/conditions/movement = false
 parameters/conditions/not_movement = true
 
@@ -872,8 +951,8 @@ __meta__ = {
 unique_name_in_owner = true
 scale = Vector2( 3.00725, 3.29545 )
 frames = SubResource( 7 )
-animation = "dead"
-frame = 10
+animation = "dodge"
+frame = 1
 speed_scale = 2.0
 
 [node name="AtaqueHit" type="Area2D" parent="SpritesAnimacao"]
@@ -908,6 +987,7 @@ root_node = NodePath("../../SpritesAnimacao")
 anims/RESET = SubResource( 11 )
 anims/dash = SubResource( 84 )
 anims/dead = SubResource( 67 )
+anims/dodge = SubResource( 92 )
 anims/idle = SubResource( 10 )
 anims/move = SubResource( 20 )
 anims/slash = SubResource( 29 )
@@ -925,8 +1005,14 @@ anims/strong_slash = SubResource( 80 )
 
 [node name="Effects" type="Node" parent="."]
 
+[node name="DodgeTimer" type="Timer" parent="."]
+wait_time = 5.0
+one_shot = true
+
 [connection signal="direction_changed" from="." to="." method="_on_Player_direction_changed"]
+[connection signal="health_depleted" from="." to="." method="_on_Player_health_depleted"]
 [connection signal="inventory_buff_added" from="." to="." method="_on_Player_inventory_buff_added"]
+[connection signal="player_dodged" from="." to="." method="_on_Player_player_dodged"]
 [connection signal="spd_scaling_changed" from="." to="." method="_on_Player_spd_scaling_changed"]
 [connection signal="area_entered" from="SpritesAnimacao/AtaqueHit" to="." method="_on_AtaqueHit_area_entered"]
 [connection signal="body_entered" from="SpritesAnimacao/AtaqueHit" to="." method="_on_AtaqueHit_body_entered"]

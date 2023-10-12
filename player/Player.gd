@@ -3,7 +3,7 @@ extends KinematicBody2D
 # Atributos base
 export var atk = 1
 export var health = 5
-
+signal health_depleted
 # Physics related
 export var direction = Vector2.ZERO
 var velocity = 0
@@ -98,6 +98,15 @@ func activate_dash():
 	animation_tree.set("parameters/conditions/dash", true)
 	
 	
+func _dodge_handler():
+	if Input.is_action_just_pressed("dodge") and $DodgeTimer.get_time_left() <= 0:
+		$DodgeTimer.start(5)
+		animation_tree.set("parameters/conditions/dodge", true)
+	else:
+		animation_tree.set("parameters/conditions/dodge", false)
+
+
+
 func _dash_handler(input_direction):
 	if was_any_input_action_just_pressed(movement_actions):
 		if !animation_tree.get("parameters/conditions/dash"):
@@ -115,7 +124,7 @@ func _dash_handler(input_direction):
 				activate_dash()
 	else:
 		animation_tree.set("parameters/conditions/dash", false)
-
+		
 signal direction_changed(old_value, new_value)
 
 func _on_Player_direction_changed(old_direction, new_direction):
@@ -149,6 +158,7 @@ func _movement_mechanic_handler():
 func _input(_event):
 	_class_swap_mechanic_handler()
 	_attack_mechanic_handler()
+	_dodge_handler()
 
 func was_any_input_action_just_pressed(actions):
 	for action in actions:
@@ -166,17 +176,34 @@ func _physics_process(_delta):
 func take_damage(dmg):
 	health -= dmg
 	if health <= 0:
-		animation_tree.set("parameters/conditions/death", true)
 		emit_signal("health_depleted")
 		
+signal player_dodged
 
+func _on_Player_player_dodged():
+	$DodgeTimer.start(0.1) # Replace with function body.
+	print($DodgeTimer.get_time_left())
+	
+# TODO: ESSA E A AREA DA ESPADA NAO DO CORPO DO JOGADOR ICANT
 func _on_AtaqueHit_body_entered(body):
+	var dodge_state = body.animation_tree.get("parameters/playback").get_current_node()
+	print(dodge_state)	
+#	print(body)	
 	if body.is_in_group("hurtbox") and body != self:
+		if dodge_state == "dodge":
+			print("hey i dodged man")
+			body.emit_signal("player_dodged")
+			return
 		print("where dmg")
 		body.take_damage(atk)    
-		
+
 func _on_AtaqueHit2_body_entered(body):
+	var dodge_state = body.animation_tree.get("parameters/playback").get_current_node()
 	if body.is_in_group("hurtbox") and body != self:
+		if dodge_state == "dodge":
+			print("hey i dodged2 man")
+			body.emit_signal("player_dodged")
+			return
 		print("hey")
 		body.apply_effect_speed_negative(body)    
 		
@@ -190,3 +217,8 @@ func apply_effect_speed_negative(_player):
 	var spd_debuff = debuff_instance.get_node("Debuff/SPD_DEBUFF").duplicate()
 	$Effects.add_child(spd_debuff)
 	player_debuffs.append(spd_debuff)
+
+
+func _on_Player_health_depleted():
+	animation_tree.set("parameters/conditions/death", true)
+
