@@ -110,7 +110,7 @@ states/strong_slash/position = Vector2( 504, 139 )
 transitions = [ "idle", "slash", SubResource( 45 ), "slash", "idle", SubResource( 46 ), "idle", "move", SubResource( 48 ), "move", "idle", SubResource( 49 ), "move", "slash", SubResource( 50 ), "slash", "move", SubResource( 51 ), "idle", "dead", SubResource( 53 ), "slash", "dead", SubResource( 54 ), "move", "dead", SubResource( 55 ), "slash", "strong_slash", SubResource( 76 ), "strong_slash", "idle", SubResource( 77 ), "strong_slash", "move", SubResource( 78 ), "idle", "dash", SubResource( 82 ), "dash", "idle", SubResource( 83 ), "move", "dash", SubResource( 85 ), "dash", "move", SubResource( 86 ) ]
 start_node = "idle"
 end_node = "dead"
-graph_offset = Vector2( -431.883, 243.389 )
+graph_offset = Vector2( -400.293, 159.577 )
 
 [sub_resource type="AnimationNodeStateMachinePlayback" id=44]
 
@@ -326,7 +326,7 @@ extents = Vector2( 13.8891, 9.93794 )
 [sub_resource type="Animation" id=11]
 length = 0.001
 tracks/0/type = "value"
-tracks/0/path = NodePath(".:frame")
+tracks/0/path = NodePath("AtaqueHit/AtaqueColisao:disabled")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/imported = false
@@ -335,10 +335,10 @@ tracks/0/keys = {
 "times": PoolRealArray( 0 ),
 "transitions": PoolRealArray( 1 ),
 "update": 0,
-"values": [ 1 ]
+"values": [ true ]
 }
 tracks/1/type = "value"
-tracks/1/path = NodePath(".:animation")
+tracks/1/path = NodePath("AtaqueHit2/BonusATKColisao:disabled")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/imported = false
@@ -347,39 +347,15 @@ tracks/1/keys = {
 "times": PoolRealArray( 0 ),
 "transitions": PoolRealArray( 1 ),
 "update": 0,
-"values": [ "slash" ]
+"values": [ true ]
 }
 tracks/2/type = "value"
-tracks/2/path = NodePath("AtaqueHit/AtaqueColisao:disabled")
+tracks/2/path = NodePath("../PlayerCollision:disabled")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/imported = false
 tracks/2/enabled = true
 tracks/2/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
-"update": 0,
-"values": [ true ]
-}
-tracks/3/type = "value"
-tracks/3/path = NodePath("AtaqueHit2/BonusATKColisao:disabled")
-tracks/3/interp = 1
-tracks/3/loop_wrap = true
-tracks/3/imported = false
-tracks/3/enabled = true
-tracks/3/keys = {
-"times": PoolRealArray( 0 ),
-"transitions": PoolRealArray( 1 ),
-"update": 0,
-"values": [ true ]
-}
-tracks/4/type = "value"
-tracks/4/path = NodePath("../PlayerCollision:disabled")
-tracks/4/interp = 1
-tracks/4/loop_wrap = true
-tracks/4/imported = false
-tracks/4/enabled = true
-tracks/4/keys = {
 "times": PoolRealArray( 0 ),
 "transitions": PoolRealArray( 1 ),
 "update": 1,
@@ -652,7 +628,7 @@ tracks/3/keys = {
 "times": PoolRealArray( 0 ),
 "transitions": PoolRealArray( 1 ),
 "update": 0,
-"values": [ true ]
+"values": [ false ]
 }
 tracks/4/type = "value"
 tracks/4/path = NodePath("AtaqueHit2/BonusATKColisao:disabled")
@@ -867,7 +843,7 @@ __meta__ = {
 [node name="AnimationTree" type="AnimationTree" parent="."]
 unique_name_in_owner = true
 tree_root = SubResource( 34 )
-anim_player = NodePath("../WARRIOR")
+anim_player = NodePath("../Class/WARRIOR")
 active = true
 root_motion_track = NodePath(".")
 parameters/playback = SubResource( 44 )
@@ -882,7 +858,6 @@ parameters/conditions/not_movement = true
 position = Vector2( -23.25, 14.5 )
 z_as_relative = false
 shape = SubResource( 8 )
-disabled = true
 __meta__ = {
 "_edit_lock_": true
 }
@@ -897,8 +872,8 @@ __meta__ = {
 unique_name_in_owner = true
 scale = Vector2( 3.00725, 3.29545 )
 frames = SubResource( 7 )
-animation = "slash"
-frame = 1
+animation = "dead"
+frame = 10
 speed_scale = 2.0
 
 [node name="AtaqueHit" type="Area2D" parent="SpritesAnimacao"]
@@ -925,11 +900,11 @@ __meta__ = {
 shape = SubResource( 36 )
 disabled = true
 
-[node name="Tween" type="Tween" parent="SpritesAnimacao"]
+[node name="Class" type="Node" parent="."]
 
-[node name="WARRIOR" type="AnimationPlayer" parent="."]
+[node name="WARRIOR" type="AnimationPlayer" parent="Class"]
 unique_name_in_owner = true
-root_node = NodePath("../SpritesAnimacao")
+root_node = NodePath("../../SpritesAnimacao")
 anims/RESET = SubResource( 11 )
 anims/dash = SubResource( 84 )
 anims/dead = SubResource( 67 )
@@ -938,9 +913,9 @@ anims/move = SubResource( 20 )
 anims/slash = SubResource( 29 )
 anims/strong_slash = SubResource( 79 )
 
-[node name="THIEF" type="AnimationPlayer" parent="."]
+[node name="THIEF" type="AnimationPlayer" parent="Class"]
 unique_name_in_owner = true
-root_node = NodePath("../SpritesAnimacao")
+root_node = NodePath("../../SpritesAnimacao")
 anims/RESET = SubResource( 68 )
 anims/dead = SubResource( 69 )
 anims/idle = SubResource( 70 )
@@ -956,4 +931,4 @@ anims/strong_slash = SubResource( 80 )
 [connection signal="area_entered" from="SpritesAnimacao/AtaqueHit" to="." method="_on_AtaqueHit_area_entered"]
 [connection signal="body_entered" from="SpritesAnimacao/AtaqueHit" to="." method="_on_AtaqueHit_body_entered"]
 [connection signal="body_entered" from="SpritesAnimacao/AtaqueHit2" to="." method="_on_AtaqueHit2_body_entered"]
-[connection signal="animation_finished" from="WARRIOR" to="." method="_on_WARRIOR_animation_finished"]
+[connection signal="animation_finished" from="Class/WARRIOR" to="." method="_on_WARRIOR_animation_finished"]

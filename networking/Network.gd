@@ -64,7 +64,7 @@ func _on_Button3_pressed():
 	get_node("/root/Main").add_child(world)
 
 	# Create the player instance for the server
-	var player = preload("res://Player2.tscn").instance()
+	var player = preload("res://player/Player.tscn").instance()
 	player.set_name(str(peerId))
 	player.set_network_master(peerId)
 	get_node("/root/Main").add_child(player)
@@ -72,7 +72,7 @@ func _on_Button3_pressed():
 	# Iterate through connected players and create player instances for each
 	var counter = 1
 	for p in connected_players:
-		var player2 = preload("res://Player2.tscn").instance()
+		var player2 = preload("res://player/Player.tscn").instance()
 		player2.set_name(str(p))
 		player2.set_network_master(p)
 		
@@ -96,14 +96,14 @@ remote func initialize_world(serverId):
 
 	# Create the player instance for the client
 	var peerId = get_tree().get_network_unique_id()
-	var player = preload("res://Player2.tscn").instance()
+	var player = preload("res://player/Player.tscn").instance()
 	player.set_name(str(peerId))
 	player.set_network_master(peerId)
 	get_node("/root/Main").add_child(player)
 	
 	var counter = 1
 	for p in connected_players:
-		var player2 = preload("res://Player2.tscn").instance()
+		var player2 = preload("res://player/Player.tscn").instance()
 		player2.set_name(str(p))
 		player2.set_network_master(p)
 		

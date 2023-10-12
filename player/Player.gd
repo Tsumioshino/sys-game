@@ -88,9 +88,13 @@ func activate_dash():
 	var dash_distance = 200
 	var dash_duration = 0.5
 	var dash_target_position = global_position + dash_direction * dash_distance
-	get_node("%Tween").interpolate_property(self, "global_position", global_position, dash_target_position, dash_duration)
-	get_node("%Tween").interpolate_property(self, "velocity", velocity, 0, dash_duration)
-	get_node("%Tween").start()
+	
+	var tween = get_tree().create_tween()
+	tween.tween_property(self, "global_position", global_position, 0)
+	tween.tween_property(self, "global_position", dash_target_position, dash_duration)
+	# TODO: revisar que eu esqueci algumas propriedades
+	tween.tween_property(self, "velocity", velocity, 0)
+	tween.tween_property(self, "velocity", 0, dash_duration)
 	animation_tree.set("parameters/conditions/dash", true)
 	
 	
