@@ -1,8 +1,9 @@
 extends KinematicBody2D
 
 # Atributos base
-export var atk = 1
-export var health = 5
+var atk = 1
+var max_health = 10
+var current_health = 1
 signal health_depleted
 # Physics related
 export var direction = Vector2.ZERO
@@ -159,6 +160,7 @@ func _input(_event):
 	_class_swap_mechanic_handler()
 	_attack_mechanic_handler()
 	_dodge_handler()
+	check_health()
 
 func was_any_input_action_just_pressed(actions):
 	for action in actions:
@@ -174,8 +176,8 @@ func _physics_process(_delta):
 	move_and_slide(velocity)
 	
 func take_damage(dmg):
-	health -= dmg
-	if health <= 0:
+	current_health -= dmg
+	if current_health <= 0:
 		emit_signal("health_depleted")
 		
 signal player_dodged
@@ -222,3 +224,57 @@ func apply_effect_speed_negative(_player):
 func _on_Player_health_depleted():
 	animation_tree.set("parameters/conditions/death", true)
 
+# A habilidade 'Sangue de Guerreiro' 
+# deve ser uma habilidade única da classe Guerreiro
+# classificada como passiva, self-target, 
+# e deve afetar apenas o jogador em questão, 
+# que aumenta status do jogador proporcional à perda dos pontos de vida e, 
+# quando os pontos de vida estão abaixos de certo limiar,
+# ativa um efeito ativo de cura passiva que 
+# para somente quando o jogador morre 
+# ou quando os pontos de vida alcançam 100
+func check_health():
+	if current_health <= (max_health * 0.1) and animation_tree.get_animation_player() == "%WARRIOR" and not sangueGuerreiroActivated:
+		emit_signal("sangue_de_guerreiro")
+		
+signal sangue_de_guerreiro
+signal health_recovered
+var sangueGuerreiroActivated = false
+
+func recover_health():
+	while current_health < max_health:
+		current_health += 1
+		print("my current_health is")
+		print(current_health)
+		yield(get_tree().create_timer(1.0), "timeout")
+
+func apply_bonus_effects():
+	atk += 10
+	print("ur atk is come")
+	
+func remove_bonus_effects():
+	atk -= 10
+	print("ur atk is gone")
+	
+func _on_Player_sangue_de_guerreiro():
+	assert(animation_tree.get_animation_player() == "%WARRIOR")
+	assert(not sangueGuerreiroActivated)
+	apply_bonus_effects()
+	yield(recover_health(), "completed")
+	remove_bonus_effects()
+	
+# A habilidade 'Mordida!'
+# deve ser uma habilidade única da classe Gatuno
+# classificada como ativa, single-target, e deve afetar ambos os jogadores, 
+# infligindo certa quantidade de dano à ambos jogadores, 
+# e infligindo efeito negativo no oponente que, 
+# conforme mais instâncias da habilidade 'Mordida!' são utilizadas, 
+# o dano causado à quem possui o debuff aumenta.
+var cooldown = 3 # segundos
+
+signal mordida
+# var sangueGuerreiroActivated = false
+
+#func _on_Player_mordida():
+#	assert(animation_tree.get_animation_player() == "%THIEF") # Replace with function body.
+#	apply_mordida(self, body)
