@@ -75,10 +75,6 @@ func _attack_mechanic_handler():
 		animation_tree.set("parameters/conditions/consecutive_atk", false)
 	
 
-
-func _death():
-	return animation_tree.get("parameters/conditions/death")
-
 var timerdash = Timer.new()
 var consecutiveKeyPresses2 = 0
 var desiredKeyPresses2 = 2	
@@ -177,8 +173,6 @@ func was_any_input_action_just_pressed(actions):
 	return false
 
 func _physics_process(_delta):
-	if _death():
-		return
 	var input_direction = _movement_mechanic_handler()
 	velocity = input_direction * spd
 	move_and_slide(velocity)
@@ -234,6 +228,7 @@ func apply_effect_speed_negative(_player):
 
 
 func _on_Player_health_depleted():
+	set_process_input(false)
 	animation_tree.set("parameters/conditions/death", true)
 
 # A habilidade 'Sangue de Guerreiro' 

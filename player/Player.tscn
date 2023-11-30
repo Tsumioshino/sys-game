@@ -133,7 +133,7 @@ advance_condition = "not_movement"
 advance_condition = "defense"
 
 [sub_resource type="AnimationNodeStateMachineTransition" id=96]
-switch_mode = 2
+switch_mode = 1
 auto_advance = true
 advance_condition = "movement"
 
@@ -678,10 +678,10 @@ parameters/conditions/attack = false
 parameters/conditions/consecutive_atk = false
 parameters/conditions/dash = false
 parameters/conditions/death = false
-parameters/conditions/defense = true
+parameters/conditions/defense = false
 parameters/conditions/dodge = false
-parameters/conditions/movement = true
-parameters/conditions/not_movement = false
+parameters/conditions/movement = false
+parameters/conditions/not_movement = true
 
 [node name="PlayerCollision" type="CollisionShape2D" parent="."]
 position = Vector2( -23.25, 14.5 )
