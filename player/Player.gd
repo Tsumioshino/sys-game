@@ -1,9 +1,10 @@
 extends KinematicBody2D
 
 # Atributos base
-var atk = 1
+var atk = 3
 var max_health = 10
-var current_health = 1
+var current_health = 10
+var defense = 2
 signal health_depleted
 # Physics related
 export var direction = Vector2.ZERO
@@ -106,6 +107,11 @@ func _dodge_handler():
 	else:
 		animation_tree.set("parameters/conditions/dodge", false)
 
+func _defense_handler():
+	if Input.is_action_pressed("defend"):
+		animation_tree.set("parameters/conditions/defense", true)
+	else:
+		animation_tree.set("parameters/conditions/defense", false)
 
 
 func _dash_handler(input_direction):
@@ -159,6 +165,8 @@ func _movement_mechanic_handler():
 func _input(_event):
 	_class_swap_mechanic_handler()
 	_attack_mechanic_handler()
+	_defense_handler()
+	_defense_handler()
 	_dodge_handler()
 	check_health()
 
@@ -188,14 +196,18 @@ func _on_Player_player_dodged():
 	
 # TODO: ESSA E A AREA DA ESPADA NAO DO CORPO DO JOGADOR ICANT
 func _on_AtaqueHit_body_entered(body):
-	var dodge_state = body.animation_tree.get("parameters/playback").get_current_node()
-	print(dodge_state)	
+	var body_state = body.animation_tree.get("parameters/playback").get_current_node()
+	print(body_state)	
 #	print(body)	
 	if body.is_in_group("hurtbox") and body != self:
-		if dodge_state == "dodge":
+		if body_state == "dodge":
 			print("hey i dodged man")
 			body.emit_signal("player_dodged")
 			return
+		elif body_state == "defense":
+			body.take_damage(atk - defense)
+			return
+			
 		print("where dmg")
 		body.take_damage(atk)    
 
