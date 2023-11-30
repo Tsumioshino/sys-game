@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://ui/Adds.tscn" type="PackedScene" id=1]
-[ext_resource path="res://ui/Class.tscn" type="PackedScene" id=2]
+[ext_resource path="res://ui/Player/Class/Class.tscn" type="PackedScene" id=2]
 [ext_resource path="res://ui/Skillset.tscn" type="PackedScene" id=3]
 [ext_resource path="res://ui/PlayerThings.tscn" type="PackedScene" id=4]
 
@@ -15,14 +15,15 @@ margin_bottom = 386.0
 columns = 4
 
 [node name="Menu Container" parent="Grid" instance=ExtResource( 1 )]
+margin_bottom = 386.0
 
 [node name="Class Container" parent="Grid" instance=ExtResource( 2 )]
 margin_right = 310.0
-margin_bottom = 218.0
+margin_bottom = 386.0
 
 [node name="Skillset" parent="Grid" instance=ExtResource( 3 )]
 margin_left = 314.0
 margin_right = 800.0
-margin_bottom = 218.0
+margin_bottom = 386.0
 
 [node name="HBoxContainer" parent="Grid" instance=ExtResource( 4 )]

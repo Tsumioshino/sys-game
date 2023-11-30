@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://ui/Player/Class/Warrior.tscn" type="PackedScene" id=1]
+
+[node name="Class Container" type="VBoxContainer"]
+margin_left = 240.0
+margin_right = 298.0
+margin_bottom = 90.0
+
+[node name="Warrior" parent="." instance=ExtResource( 1 )]

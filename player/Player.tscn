@@ -951,8 +951,7 @@ __meta__ = {
 unique_name_in_owner = true
 scale = Vector2( 3.00725, 3.29545 )
 frames = SubResource( 7 )
-animation = "dodge"
-frame = 1
+animation = "slash"
 speed_scale = 2.0
 
 [node name="AtaqueHit" type="Area2D" parent="SpritesAnimacao"]
