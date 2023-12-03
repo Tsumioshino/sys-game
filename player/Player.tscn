@@ -659,13 +659,11 @@ tracks/3/keys = {
 "values": [ true ]
 }
 
-[node name="Player" type="KinematicBody2D" groups=["hurtbox"]]
+[node name="Player" type="KinematicBody2D" groups=["hurtbox", "player"]]
 unique_name_in_owner = true
-position = Vector2( 81, 48 )
+position = Vector2( 9.53674e-07, -56 )
+scale = Vector2( 0.8, 0.8 )
 script = ExtResource( 1 )
-__meta__ = {
-"_edit_lock_": true
-}
 
 [node name="AnimationTree" type="AnimationTree" parent="."]
 unique_name_in_owner = true
@@ -687,15 +685,9 @@ parameters/conditions/not_movement = true
 position = Vector2( -23.25, 14.5 )
 z_as_relative = false
 shape = SubResource( 8 )
-__meta__ = {
-"_edit_lock_": true
-}
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2( -23, 13 )
-__meta__ = {
-"_edit_lock_": true
-}
 
 [node name="SpritesAnimacao" type="AnimatedSprite" parent="."]
 unique_name_in_owner = true
@@ -705,9 +697,6 @@ animation = "slash"
 
 [node name="AtaqueHit" type="Area2D" parent="SpritesAnimacao"]
 position = Vector2( 21.2819, 8.19312 )
-__meta__ = {
-"_edit_lock_": true
-}
 
 [node name="AtaqueColisao" type="CollisionShape2D" parent="SpritesAnimacao/AtaqueHit"]
 position = Vector2( -0.332527, 0 )
@@ -719,9 +708,6 @@ __meta__ = {
 
 [node name="AtaqueHit2" type="Area2D" parent="SpritesAnimacao"]
 position = Vector2( 21.6144, 8.19312 )
-__meta__ = {
-"_edit_lock_": true
-}
 
 [node name="BonusATKColisao" type="CollisionShape2D" parent="SpritesAnimacao/AtaqueHit2"]
 shape = SubResource( 36 )
