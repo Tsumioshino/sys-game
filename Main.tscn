@@ -10,12 +10,14 @@
 margin_left = 303.0
 margin_top = 190.0
 margin_right = 448.0
-margin_bottom = 258.0
+margin_bottom = 291.0
 rect_scale = Vector2( 3.08142, 3.08142 )
 
 [node name="VBoxContainer" type="VBoxContainer" parent="UILogic/HBoxContainer"]
 margin_right = 145.0
-margin_bottom = 68.0
+margin_bottom = 101.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
 
 [node name="CS" type="Button" parent="UILogic/HBoxContainer/VBoxContainer"]
 unique_name_in_owner = true
@@ -37,9 +39,12 @@ margin_right = 145.0
 margin_bottom = 68.0
 text = "Iniciar"
 
-[node name="Label" type="Label" parent="UILogic"]
-margin_left = 40.0
-margin_right = 40.0
-margin_bottom = 14.0
+[node name="IPAdd" type="TextEdit" parent="UILogic/HBoxContainer/VBoxContainer"]
+margin_top = 72.0
+margin_right = 145.0
+margin_bottom = 101.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "localhost"
 
 [node name="MusicLogic" type="Node" parent="."]

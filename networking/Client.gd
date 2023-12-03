@@ -8,6 +8,7 @@ var players_info = {}
 var cs: Button = null;
 var cc: Button = null;
 var sg: Button = null;
+var ipAdd: TextEdit = null;
 
 func _ready():
 	cs = get_node("/root/Main/UILogic/HBoxContainer/VBoxContainer/CS")
@@ -17,6 +18,9 @@ func _ready():
 	cc = get_node("/root/Main/UILogic/HBoxContainer/VBoxContainer/CC")
 	cc.connect("pressed", self, "_create_client")
 	sg.set_disabled(true);
+	
+	ipAdd = get_node("/root/Main/UILogic/HBoxContainer/VBoxContainer/IPAdd")
+	
 #	get_tree().connect("connected_to_server", self, "_send_info")
 	get_tree().connect("server_disconnected", self, "_leave_room")
 		
@@ -24,7 +28,7 @@ func _ready():
 # Criação do Cliente (servidor precisa existir)
 func _create_client():
 	var peer = NetworkedMultiplayerENet.new()
-	peer.create_client(SERVER_IP, SERVER_PORT)
+	peer.create_client(ipAdd.text, SERVER_PORT)
 	get_tree().network_peer = peer
 	cs.set_disabled(true);
 	print(peer)
