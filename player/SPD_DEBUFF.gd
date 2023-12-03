@@ -15,14 +15,14 @@ func _tween_effect():
 func _apply_effect(player_data):
 	_tween_effect()
 	player_data.spd_scaling -= 2
-	player_data.emit_signal("spd_scaling_changed")
+	player_data.emit_signal("spd_scaling_changed", player_data.spd_scaling)
 	$DebuffTimer.start()
 
 func _remove_effect(player_data):
 	print("player spd is gone")
 	player_data.player_debuffs.erase(self)
 	player_data.spd_scaling += 2
-	player_data.emit_signal("spd_scaling_changed")
+	player_data.emit_signal("spd_scaling_changed", player_data.spd_scaling)
 	self.queue_free()
 
 func _on_DebuffTimer_timeout():

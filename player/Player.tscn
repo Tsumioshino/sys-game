@@ -157,7 +157,7 @@ states/strong_slash/position = Vector2( 504, 139 )
 transitions = [ "idle", "slash", SubResource( 45 ), "slash", "idle", SubResource( 46 ), "idle", "move", SubResource( 48 ), "move", "idle", SubResource( 49 ), "move", "slash", SubResource( 50 ), "slash", "move", SubResource( 51 ), "idle", "dead", SubResource( 53 ), "slash", "dead", SubResource( 54 ), "move", "dead", SubResource( 55 ), "slash", "strong_slash", SubResource( 76 ), "strong_slash", "idle", SubResource( 77 ), "strong_slash", "move", SubResource( 78 ), "idle", "dash", SubResource( 82 ), "dash", "idle", SubResource( 83 ), "move", "dash", SubResource( 85 ), "dash", "move", SubResource( 86 ), "move", "dodge", SubResource( 88 ), "dodge", "move", SubResource( 89 ), "idle", "dodge", SubResource( 90 ), "dodge", "idle", SubResource( 91 ), "idle", "defend", SubResource( 93 ), "defend", "idle", SubResource( 94 ), "move", "defend", SubResource( 95 ), "defend", "move", SubResource( 96 ) ]
 start_node = "idle"
 end_node = "dead"
-graph_offset = Vector2( -56.5332, 338.278 )
+graph_offset = Vector2( -306.038, 240.733 )
 
 [sub_resource type="AnimationNodeStateMachinePlayback" id=44]
 
@@ -748,13 +748,11 @@ anims/strong_slash = SubResource( 80 )
 wait_time = 5.0
 one_shot = true
 
-[connection signal="direction_changed" from="." to="." method="_on_Player_direction_changed"]
-[connection signal="health_depleted" from="." to="." method="_on_Player_health_depleted"]
-[connection signal="inventory_buff_added" from="." to="." method="_on_Player_inventory_buff_added"]
-[connection signal="mordida" from="." to="." method="_on_Player_mordida"]
-[connection signal="player_dodged" from="." to="." method="_on_Player_player_dodged"]
-[connection signal="sangue_de_guerreiro" from="." to="." method="_on_Player_sangue_de_guerreiro"]
-[connection signal="spd_scaling_changed" from="." to="." method="_on_Player_spd_scaling_changed"]
+[node name="RespawnTimer" type="Timer" parent="."]
+wait_time = 3.0
+one_shot = true
+
 [connection signal="area_entered" from="SpritesAnimacao/AtaqueHit" to="." method="_on_AtaqueHit_area_entered"]
 [connection signal="body_entered" from="SpritesAnimacao/AtaqueHit" to="." method="_on_AtaqueHit_body_entered"]
 [connection signal="body_entered" from="SpritesAnimacao/AtaqueHit2" to="." method="_on_AtaqueHit2_body_entered"]
+[connection signal="timeout" from="RespawnTimer" to="." method="_on_RespawnTimer_timeout"]
