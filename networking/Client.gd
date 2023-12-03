@@ -5,8 +5,18 @@ var SERVER_PORT = 10000
 var connected_players = []
 var players_info = {}
 
+var cs: Button = null;
+var cc: Button = null;
+var sg: Button = null;
+
 func _ready():
-	get_node("/root/Main/UILogic/HBoxContainer/CC").connect("pressed", self, "_create_client")
+	cs = get_node("/root/Main/UILogic/HBoxContainer/VBoxContainer/CS")
+	cs.connect("pressed", self, "_create_server")
+	sg = get_node("/root/Main/UILogic/HBoxContainer/VBoxContainer/SG")
+	sg.connect("pressed", self, "_close_new_connection")
+	cc = get_node("/root/Main/UILogic/HBoxContainer/VBoxContainer/CC")
+	cc.connect("pressed", self, "_create_client")
+	sg.set_disabled(true);
 #	get_tree().connect("connected_to_server", self, "_send_info")
 	get_tree().connect("server_disconnected", self, "_leave_room")
 		
@@ -16,6 +26,7 @@ func _create_client():
 	var peer = NetworkedMultiplayerENet.new()
 	peer.create_client(SERVER_IP, SERVER_PORT)
 	get_tree().network_peer = peer
+	cs.set_disabled(true);
 	print(peer)
 	
 remote func register_player():

@@ -8,10 +8,17 @@ var server_info = { lobby_id = 1, match_time = 300 }
 var player_info
 var players_info = {}
 var connected_players = []
+var cs: Button = null;
+var cc: Button = null;
+var sg: Button = null;
 
 remote func _ready():
-	get_node("/root/Main/UILogic/HBoxContainer/CS").connect("pressed", self, "_create_server")
-	get_node("/root/Main/UILogic/HBoxContainer/SG").connect("pressed", self, "_close_new_connection")
+	cs = get_node("/root/Main/UILogic/HBoxContainer/VBoxContainer/CS")
+	cs.connect("pressed", self, "_create_server")
+	sg = get_node("/root/Main/UILogic/HBoxContainer/VBoxContainer/SG")
+	sg.connect("pressed", self, "_close_new_connection")
+	cc = get_node("/root/Main/UILogic/HBoxContainer/VBoxContainer/CC")
+	sg.set_disabled(true);
 	get_tree().connect("network_peer_connected", self, "_client_connection")
 		
 # Criação do Servidor
@@ -19,6 +26,8 @@ func _create_server():
 	var peer = NetworkedMultiplayerENet.new()
 	peer.create_server(SERVER_PORT, MAX_PLAYERS)
 	get_tree().network_peer = peer
+	cc.set_disabled(true);
+	sg.set_disabled(false);
 	print(peer)
 	
 func _client_connection(id):
