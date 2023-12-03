@@ -13,6 +13,7 @@ var spd_scaling = 3
 var spd = 300 # Velocity * spd_scaling
 
 signal spd_scaling_changed
+signal position_changed(new_pos)
 
 func _on_Player_spd_scaling_changed():
 	spd = 100 * spd_scaling
@@ -159,12 +160,13 @@ func _movement_mechanic_handler():
 	return input_direction	
 
 func _input(_event):
-	_class_swap_mechanic_handler()
-	_attack_mechanic_handler()
-	_defense_handler()
-	_defense_handler()
-	_dodge_handler()
-	check_health()
+	if is_network_master():
+		_class_swap_mechanic_handler()
+		_attack_mechanic_handler()
+		_defense_handler()
+		_defense_handler()
+		_dodge_handler()
+		check_health()
 
 func was_any_input_action_just_pressed(actions):
 	for action in actions:
@@ -173,9 +175,12 @@ func was_any_input_action_just_pressed(actions):
 	return false
 
 func _physics_process(_delta):
-	var input_direction = _movement_mechanic_handler()
-	velocity = input_direction * spd
-	move_and_slide(velocity)
+	if is_network_master():
+		var input_direction = _movement_mechanic_handler()
+		velocity = input_direction * spd
+		emit_signal("position_changed", global_position)
+		move_and_slide(velocity)
+
 	
 func take_damage(dmg):
 	current_health -= dmg
@@ -230,6 +235,23 @@ func apply_effect_speed_negative(_player):
 func _on_Player_health_depleted():
 	set_process_input(false)
 	animation_tree.set("parameters/conditions/death", true)
+	rpc('_die')
+	
+sync func _die():
+	$RespawnTimer.start()
+	set_physics_process(false)
+#	for child in get_children():
+#		if "disabled" in child:
+#			child.disabled = true
+
+func _on_RespawnTimer_timeout():
+	print("i am back")
+	set_physics_process(true)
+	animation_tree.set("parameters/conditions/death", false)
+#	for child in get_children():
+#		if "disabled" in child:
+#			child.disabled = false
+	current_health = max_health
 
 # A habilidade 'Sangue de Guerreiro' 
 # deve ser uma habilidade única da classe Guerreiro
@@ -253,7 +275,7 @@ func recover_health():
 		current_health += 1
 		print("my current_health is")
 		print(current_health)
-		yield(get_tree().create_timer(1.0), "timeout")
+		yield(get_tree().create_timer(4.0), "timeout")
 
 func apply_bonus_effects():
 	atk += 10
