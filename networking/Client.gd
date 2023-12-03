@@ -5,8 +5,18 @@ var SERVER_PORT = 10000
 var connected_players = []
 var players_info = {}
 
+var cs: Button = null;
+var cc: Button = null;
+var sg: Button = null;
+
 func _ready():
-	get_node("/root/Main/UILogic/HBoxContainer/CC").connect("pressed", self, "_create_client")
+	cs = get_node("/root/Main/UILogic/HBoxContainer/VBoxContainer/CS")
+	cs.connect("pressed", self, "_create_server")
+	sg = get_node("/root/Main/UILogic/HBoxContainer/VBoxContainer/SG")
+	sg.connect("pressed", self, "_close_new_connection")
+	cc = get_node("/root/Main/UILogic/HBoxContainer/VBoxContainer/CC")
+	cc.connect("pressed", self, "_create_client")
+	sg.set_disabled(true);
 #	get_tree().connect("connected_to_server", self, "_send_info")
 	get_tree().connect("server_disconnected", self, "_leave_room")
 		
@@ -16,6 +26,7 @@ func _create_client():
 	var peer = NetworkedMultiplayerENet.new()
 	peer.create_client(SERVER_IP, SERVER_PORT)
 	get_tree().network_peer = peer
+	cs.set_disabled(true);
 	print(peer)
 	
 remote func register_player():
@@ -69,6 +80,8 @@ func connect_signals(player):
 	player.connect("spd_scaling_changed", self, "_on_spd_scaling_changed") #!!!!
 	player.connect("state_changed", self, "_on_state_changed") #!!!!
 	player.connect("revive", self, "_on_revive") #!!!!
+	player.connect("game_end", self, "_game_end") #!!!!
+	
 # Atributos 
 ## Direcao
 master func update_player_dir(id, old_dir, new_dir):
@@ -121,3 +134,13 @@ master func update_player_revive(id, pos):
 
 func _on_revive():
 	rpc_id(1, "apply_revive_player")
+
+
+func _game_end():
+	print("asdsadsadasd")
+	rpc_id(1, "apply_game_end")
+
+master func update_game_end(id, qmGanhou):
+	players_info[id]._ganhou(qmGanhou);
+	players_info[id].set_process_input(false);
+	players_info[id].set_physics_process(false);

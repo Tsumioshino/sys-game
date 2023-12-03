@@ -2,8 +2,8 @@ extends KinematicBody2D
 
 # Atributos base
 var atk = 3
-var max_health = 10
-var current_health = 10
+var max_health = 10.0
+var current_health = 10.0
 var defense = 2
 signal health_depleted
 # Physics related
@@ -11,8 +11,6 @@ export var direction = Vector2.ZERO
 var velocity = 0
 var spd_scaling = 3
 var spd = 300 # Velocity * spd_scaling
-
-
 
 # importantes pro rpc da vida
 signal position_changed(new_pos)
@@ -23,7 +21,6 @@ signal state_changed(new_state)
 func _on_Player_spd_scaling_changed(new_spd):
 	spd = 100 * new_spd	if new_spd > 0 else 0
 
-
 # Bonus
 enum Direction { LEFT, RIGHT, UP, DOWN }
 var look_at = Direction.RIGHT
@@ -32,11 +29,15 @@ onready var animation_tree = get_node("%AnimationTree")
 
 var timeratk = Timer.new()
 
+onready var progressVida: TextureProgress = get_node("VidaChar");
+onready var winDialog: Popup = get_node("Popup");
+
+
 func _ready():
 	connect("spd_scaling_changed", self, "_on_Player_spd_scaling_changed")
 	connect("health_depleted", self, "_on_Player_health_depleted")
 	connect("direction_changed", self, "_on_Player_direction_changed")
-		
+	progressVida.value = 100;
 	animation_tree.set_animation_player(player_class[class_count]) 
 	scale.x *= -1 if look_at == Direction.LEFT else 1
 	animation_tree.set("parameters/conditions/not_movement", true)
@@ -212,6 +213,9 @@ func _physics_process(_delta):
 func take_damage(dmg):
 	print("this hurts")
 	current_health -= dmg
+	print("asdasdsadsad")
+	print( current_health / max_health)
+	progressVida.value = ceil(current_health / max_health * 100)
 	print(current_health)
 	if current_health <= 0:
 		emit_signal("health_depleted")
@@ -287,6 +291,7 @@ func _on_RespawnTimer_timeout():
 
 mastersync func _on_Player_revive():
 	current_health = max_health
+	progressVida.value = 100
 # A habilidade 'Sangue de Guerreiro' 
 # deve ser uma habilidade única da classe Guerreiro
 # classificada como passiva, self-target, 
@@ -341,3 +346,13 @@ signal mordida
 #func _on_Player_mordida():
 #	assert(animation_tree.get_animation_player() == "%THIEF") # Replace with function body.
 #	apply_mordida(self, body)
+
+func _ganhou(id):
+	winDialog.popup();
+	winDialog.get_node("Label").text = "O jogador " + String(id) + " ganhou"
+	winDialog.set_position(self.position)
+
+
+signal game_end
+func _call_win():
+	emit_signal("game_end")

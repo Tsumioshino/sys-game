@@ -1,7 +1,11 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://mapa/tile/parede.tscn" type="PackedScene" id=1]
 [ext_resource path="res://mapa/tile/objeto.tscn" type="PackedScene" id=2]
+[ext_resource path="res://mapa/scenes/caveira.gd" type="Script" id=3]
+
+[sub_resource type="RectangleShape2D" id=1]
+extents = Vector2( 21.1096, 17.5027 )
 
 [node name="Node2D" type="Node2D"]
 
@@ -13,3 +17,15 @@ tile_data = PoolIntArray( 0, 0, 0, 1, 0, 0, 2, 0, 0, 3, 0, 0, 4, 0, 0, 5, 0, 0, 
 scale = Vector2( 1.58823, 1.46787 )
 cell_size = Vector2( 32, 32 )
 tile_data = PoolIntArray( 1114141, 0, 0 )
+
+[node name="Area2D" type="Area2D" parent="."]
+position = Vector2( 1498, 827 )
+scale = Vector2( 6.46627, 5.37059 )
+script = ExtResource( 3 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2( 0, -0.372391 )
+shape = SubResource( 1 )
+
+[connection signal="body_entered" from="Area2D" to="Area2D" method="_on_Area2D_body_entered"]
+[connection signal="body_exited" from="Area2D" to="Area2D" method="_on_Area2D_body_exited"]

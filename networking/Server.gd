@@ -8,10 +8,17 @@ var server_info = { lobby_id = 1, match_time = 300 }
 var player_info
 var players_info = {}
 var connected_players = []
+var cs: Button = null;
+var cc: Button = null;
+var sg: Button = null;
 
 remote func _ready():
-	get_node("/root/Main/UILogic/HBoxContainer/CS").connect("pressed", self, "_create_server")
-	get_node("/root/Main/UILogic/HBoxContainer/SG").connect("pressed", self, "_close_new_connection")
+	cs = get_node("/root/Main/UILogic/HBoxContainer/VBoxContainer/CS")
+	cs.connect("pressed", self, "_create_server")
+	sg = get_node("/root/Main/UILogic/HBoxContainer/VBoxContainer/SG")
+	sg.connect("pressed", self, "_close_new_connection")
+	cc = get_node("/root/Main/UILogic/HBoxContainer/VBoxContainer/CC")
+	sg.set_disabled(true);
 	get_tree().connect("network_peer_connected", self, "_client_connection")
 		
 # Criação do Servidor
@@ -19,6 +26,8 @@ func _create_server():
 	var peer = NetworkedMultiplayerENet.new()
 	peer.create_server(SERVER_PORT, MAX_PLAYERS)
 	get_tree().network_peer = peer
+	cc.set_disabled(true);
+	sg.set_disabled(false);
 	print(peer)
 	
 func _client_connection(id):
@@ -103,6 +112,8 @@ func connect_signals(player):
 	player.connect("spd_scaling_changed", self, "_on_spd_scaling_changed") #!!!!
 	player.connect("state_changed", self, "_on_state_changed") #!!!!
 	player.connect("revive", self, "_on_revive") #!!!!
+	player.connect("game_end", self, "_game_end") #!!!!
+	
 # Atributos 
 ## Direcao
 remotesync func update_player_dir(id, old_dir, new_dir):
@@ -197,3 +208,22 @@ func _on_revive():
 	print("????")
 	rpc_id(1, "apply_revive_player")
 	
+	
+func _game_end():
+	rpc_id(1, "apply_game_end")
+	
+var jogo_finalizado = false
+remotesync func apply_game_end():
+	var sender_id = get_tree().get_rpc_sender_id()
+	if !jogo_finalizado:
+		jogo_finalizado = true
+		for player_id in connected_players:
+			rpc_id(player_id, "update_game_end",player_id, sender_id)
+		
+remotesync func update_game_end(id, qmGanhou):
+	players_info[id]._ganhou(qmGanhou);
+	players_info[id].set_process_input(false);
+	players_info[id].set_physics_process(false);
+	
+	
+
