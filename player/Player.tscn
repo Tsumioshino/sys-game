@@ -1,4 +1,4 @@
-[gd_scene load_steps=106 format=2]
+[gd_scene load_steps=108 format=2]
 
 [ext_resource path="res://player/Player.gd" type="Script" id=1]
 [ext_resource path="res://resources/Warrior/SpriteSheet/Warrior_SheetnoEffect.png" type="Texture" id=2]
@@ -28,6 +28,8 @@
 [ext_resource path="res://resources/Warrior/Individual Sprite/Crouch/Warrior_Crouch_1.png" type="Texture" id=26]
 [ext_resource path="res://resources/Warrior/Individual Sprite/Crouch/Warrior_Crouch_2.png" type="Texture" id=27]
 [ext_resource path="res://resources/Warrior/Individual Sprite/Crouch/Warrior_Crouch_6.png" type="Texture" id=28]
+[ext_resource path="res://resources/bar_ammo_progress.png" type="Texture" id=29]
+[ext_resource path="res://resources/bar_ammo.png" type="Texture" id=30]
 
 [sub_resource type="AnimationNodeAnimation" id=81]
 animation = "dash"
@@ -730,13 +732,33 @@ anims/strong_slash = SubResource( 80 )
 
 [node name="Effects" type="Node" parent="."]
 
-[node name="DodgeTimer" type="Timer" parent="."]
-wait_time = 5.0
-one_shot = true
-
 [node name="RespawnTimer" type="Timer" parent="."]
 wait_time = 3.0
 one_shot = true
+
+[node name="VidaChar" type="TextureProgress" parent="."]
+margin_left = -66.25
+margin_top = 71.25
+margin_right = 18.75
+margin_bottom = 77.25
+texture_under = ExtResource( 30 )
+texture_progress = ExtResource( 29 )
+
+[node name="Popup" type="PopupDialog" parent="."]
+visible = true
+margin_left = -246.0
+margin_top = -135.0
+margin_right = 267.0
+margin_bottom = 146.0
+
+[node name="Label" type="Label" parent="Popup"]
+margin_left = 13.0
+margin_top = 13.0
+margin_right = 291.0
+margin_bottom = 150.0
+rect_scale = Vector2( 1.75155, 1.85738 )
+align = 1
+valign = 1
 
 [connection signal="area_entered" from="SpritesAnimacao/AtaqueHit" to="." method="_on_AtaqueHit_area_entered"]
 [connection signal="body_entered" from="SpritesAnimacao/AtaqueHit" to="." method="_on_AtaqueHit_body_entered"]

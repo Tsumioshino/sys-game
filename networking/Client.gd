@@ -80,6 +80,8 @@ func connect_signals(player):
 	player.connect("spd_scaling_changed", self, "_on_spd_scaling_changed") #!!!!
 	player.connect("state_changed", self, "_on_state_changed") #!!!!
 	player.connect("revive", self, "_on_revive") #!!!!
+	player.connect("game_end", self, "_game_end") #!!!!
+	
 # Atributos 
 ## Direcao
 master func update_player_dir(id, old_dir, new_dir):
@@ -132,3 +134,13 @@ master func update_player_revive(id, pos):
 
 func _on_revive():
 	rpc_id(1, "apply_revive_player")
+
+
+func _game_end():
+	print("asdsadsadasd")
+	rpc_id(1, "apply_game_end")
+
+master func update_game_end(id, qmGanhou):
+	players_info[id]._ganhou(qmGanhou);
+	players_info[id].set_process_input(false);
+	players_info[id].set_physics_process(false);

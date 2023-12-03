@@ -112,6 +112,8 @@ func connect_signals(player):
 	player.connect("spd_scaling_changed", self, "_on_spd_scaling_changed") #!!!!
 	player.connect("state_changed", self, "_on_state_changed") #!!!!
 	player.connect("revive", self, "_on_revive") #!!!!
+	player.connect("game_end", self, "_game_end") #!!!!
+	
 # Atributos 
 ## Direcao
 remotesync func update_player_dir(id, old_dir, new_dir):
@@ -206,3 +208,22 @@ func _on_revive():
 	print("????")
 	rpc_id(1, "apply_revive_player")
 	
+	
+func _game_end():
+	rpc_id(1, "apply_game_end")
+	
+var jogo_finalizado = false
+remotesync func apply_game_end():
+	var sender_id = get_tree().get_rpc_sender_id()
+	if !jogo_finalizado:
+		jogo_finalizado = true
+		for player_id in connected_players:
+			rpc_id(player_id, "update_game_end",player_id, sender_id)
+		
+remotesync func update_game_end(id, qmGanhou):
+	players_info[id]._ganhou(qmGanhou);
+	players_info[id].set_process_input(false);
+	players_info[id].set_physics_process(false);
+	
+	
+
