@@ -1,0 +1,27 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://player/SPD_BUFF.gd" type="Script" id=1]
+[ext_resource path="res://player/SPD_DEBUFF.gd" type="Script" id=2]
+
+[node name="Effect" type="Node"]
+
+[node name="Buff" type="Node" parent="."]
+
+[node name="SPD_BUFF" type="Node" parent="Buff"]
+script = ExtResource( 1 )
+
+[node name="BuffTimer" type="Timer" parent="Buff/SPD_BUFF"]
+wait_time = 5.0
+one_shot = true
+
+[node name="Debuff" type="Node" parent="."]
+
+[node name="SPD_DEBUFF" type="Node" parent="Debuff"]
+script = ExtResource( 2 )
+
+[node name="DebuffTimer" type="Timer" parent="Debuff/SPD_DEBUFF"]
+wait_time = 5.0
+one_shot = true
+
+[connection signal="timeout" from="Buff/SPD_BUFF/BuffTimer" to="Buff/SPD_BUFF" method="_on_BuffTimer_timeout"]
+[connection signal="timeout" from="Debuff/SPD_DEBUFF/DebuffTimer" to="Debuff/SPD_DEBUFF" method="_on_DebuffTimer_timeout"]
