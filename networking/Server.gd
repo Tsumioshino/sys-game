@@ -26,7 +26,6 @@ func _client_connection(id):
 
 remotesync func register_info(p_info):
 	var sender_id = get_tree().get_rpc_sender_id()
-	print(sender_id)
 	for p in connected_players:
 		if (p == sender_id):
 			players_info[sender_id] = p_info
@@ -90,9 +89,20 @@ remotesync func world_created():
 func start_game():
 	get_tree().set_pause(false)
 	
-# Client-specifics
+func configure_player(player_id):
+	var player = preload("res://player/Player.tscn").instance()
+	connect_signals(player)
+	player.set_name(str(player_id))
+	player.set_network_master(player_id)
+	return player
+	
+func connect_signals(player):
+	player.connect("position_changed", self, "_on_position_changed") #!!!!
+	player.connect("apply_spd_negative", self, "_on_debuff_apply") #!!!!
+	player.connect("spd_scaling_changed", self, "_on_spd_scaling_changed") #!!!!
+	
+# Atributos 
 remotesync func update_player_pos(id, pos):
-	print(id)
 	players_info[id].position = pos
 	
 remotesync func change_player_pos(new_pos):
@@ -103,13 +113,35 @@ remotesync func change_player_pos(new_pos):
 			
 func _on_position_changed(new_pos):
 	rpc_unreliable_id(1, "change_player_pos", new_pos)
-
-
 	
-func configure_player(player_id):
-	var player = preload("res://player/Player.tscn").instance()
-	player.connect("position_changed", self, "_on_position_changed") #!!!!
-	player.set_name(str(player_id))
-	player.set_network_master(player_id)
-	return player
+## Debuffs
+remotesync func update_player_debuff(id):
+	print("hiiiiiii")
+	players_info[id].apply_effect_speed_negative()
+
+remotesync func apply_debuff_player(id):
+	var sender_id = get_tree().get_rpc_sender_id()
+	for player_id in connected_players:
+		if player_id != sender_id:
+			print("Step 2")
+			rpc_unreliable_id(player_id, "update_player_debuff", id)
 	
+func _on_debuff_apply(id):
+	print("Step 1")
+	rpc_unreliable_id(1, "apply_debuff_player", id)
+
+## Debuffs
+remotesync func update_player_spd_scale(id, spd_scale):
+	print("hiiiiiii")
+	players_info[id].spd_scaling = spd_scale
+
+remotesync func apply_spd_scaling_player(spd_scale):
+	var sender_id = get_tree().get_rpc_sender_id()
+	for player_id in connected_players:
+		if player_id != sender_id:
+			print("Step 2")
+			rpc_unreliable_id(player_id, "update_player_spd_scale", sender_id, spd_scale)
+	
+func _on_spd_scaling_changed(spd_scale):
+	print("Step 1")
+	rpc_unreliable_id(1, "apply_spd_scaling_player", spd_scale)

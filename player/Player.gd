@@ -12,11 +12,16 @@ var velocity = 0
 var spd_scaling = 3
 var spd = 300 # Velocity * spd_scaling
 
-signal spd_scaling_changed
-signal position_changed(new_pos)
 
-func _on_Player_spd_scaling_changed():
-	spd = 100 * spd_scaling
+
+# importantes pro rpc da vida
+signal position_changed(new_pos)
+signal apply_spd_negative
+signal spd_scaling_changed(new_spd)
+
+func _on_Player_spd_scaling_changed(new_spd):
+	spd = 100 * new_spd	if new_spd > 0 else 0
+
 
 # Bonus
 enum Direction { LEFT, RIGHT, UP, DOWN }
@@ -27,6 +32,7 @@ onready var animation_tree = get_node("%AnimationTree")
 var timeratk = Timer.new()
 
 func _ready():
+	connect("spd_scaling_changed", self, "_on_Player_spd_scaling_changed")
 	animation_tree.set_animation_player(player_class[class_count]) 
 	scale.x *= -1 if look_at == Direction.LEFT else 1
 	animation_tree.set("parameters/conditions/not_movement", true)
@@ -161,7 +167,7 @@ func _movement_mechanic_handler():
 
 func _input(_event):
 	if is_network_master():
-		_class_swap_mechanic_handler()
+		#_class_swap_mechanic_handler()
 		_attack_mechanic_handler()
 		_defense_handler()
 		_defense_handler()
@@ -176,6 +182,8 @@ func was_any_input_action_just_pressed(actions):
 
 func _physics_process(_delta):
 	if is_network_master():
+		print(spd)
+		print(spd_scaling)
 		var input_direction = _movement_mechanic_handler()
 		velocity = input_direction * spd
 		emit_signal("position_changed", global_position)
@@ -214,18 +222,18 @@ func _on_AtaqueHit2_body_entered(body):
 	var dodge_state = body.animation_tree.get("parameters/playback").get_current_node()
 	if body.is_in_group("hurtbox") and body != self:
 		if dodge_state == "dodge":
-			print("hey i dodged2 man")
 			body.emit_signal("player_dodged")
 			return
-		print("hey")
-		body.apply_effect_speed_negative(body)    
+		body.apply_effect_speed_negative() 
+		print(body.get_name())
+		emit_signal("apply_spd_negative", body.get_name().to_int())
 		
 func apply_effect_speed_positive(_player):
 	var buff_instance = load("res://player/Effect.tscn").instance()
 	var spd_buff = buff_instance.get_node("Buff/SPD_BUFF").duplicate()
 	$Effects.add_child(spd_buff)
 
-func apply_effect_speed_negative(_player):
+remote func apply_effect_speed_negative():
 	var debuff_instance = load("res://player/Effect.tscn").instance()
 	var spd_debuff = debuff_instance.get_node("Debuff/SPD_DEBUFF").duplicate()
 	$Effects.add_child(spd_debuff)
