@@ -224,6 +224,8 @@ func _on_Player_player_dodged():
 	
 # TODO: ESSA E A AREA DA ESPADA NAO DO CORPO DO JOGADOR ICANT
 func _on_AtaqueHit_body_entered(body):
+	if !body.is_in_group("player"):
+		return
 	var body_state = body.animation_tree.get("parameters/playback").get_current_node()
 	print(body_state)	
 #	print(body)	
@@ -240,6 +242,8 @@ func _on_AtaqueHit_body_entered(body):
 		body.take_damage(atk)    
 
 func _on_AtaqueHit2_body_entered(body):
+	if !body.is_in_group("player"):
+		return
 	var dodge_state = body.animation_tree.get("parameters/playback").get_current_node()
 	if body.is_in_group("hurtbox") and body != self:
 		if dodge_state == "dodge":
