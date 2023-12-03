@@ -63,50 +63,61 @@ func _leave_room():
 	get_tree().change_scene('res://Main.tscn')
 	
 func connect_signals(player):
+	player.connect("direction_changed", self, "on_direction_changed")
 	player.connect("position_changed", self, "_on_position_changed") #!!!!
 	player.connect("apply_spd_negative", self, "_on_debuff_apply") #!!!!
+	player.connect("spd_scaling_changed", self, "_on_spd_scaling_changed") #!!!!
+	player.connect("state_changed", self, "_on_state_changed") #!!!!
+	player.connect("revive", self, "_on_revive") #!!!!
+# Atributos 
+## Direcao
+master func update_player_dir(id, old_dir, new_dir):
+	print("okish")
+	players_info[id]._on_Player_direction_changed(old_dir, new_dir)
+
+func _on_direction_changed(old_pos, new_pos):
+	print("huh")
+	rpc_unreliable_id(1, "change_player_dir", old_pos, new_pos)
 	
-# Atributos
 ## Posicao
-remote func update_player_pos(id: int, pos: Vector2) -> void:
+master func update_player_pos(id, pos):
 	players_info[id].position = pos
-# Client-specifics
-remote func change_player_pos(new_pos):
-	var sender_id = get_tree().get_rpc_sender_id()
-	for player_id in connected_players:
-		if player_id != sender_id:
-			rpc_unreliable_id(player_id, "update_player_pos", sender_id, new_pos)
 	
 func _on_position_changed(new_pos):
 	rpc_unreliable_id(1, "change_player_pos", new_pos)
-
+	
 ## Debuffs
-remote func update_player_debuff(id):
+master func update_player_debuff(id):
 	print("hiiiiiii")
 	players_info[id].apply_effect_speed_negative()
 
-remote func apply_debuff_player():
-	var sender_id = get_tree().get_rpc_sender_id()
-	for player_id in connected_players:
-		if player_id != sender_id:
-			print("Step 2")
-			rpc_unreliable_id(player_id, "update_player_debuff", sender_id)
-	
-func _on_debuff_apply():
+func _on_debuff_apply(id):
 	print("Step 1")
-	rpc_unreliable_id(1, "apply_debuff_player")
-	
-remote func update_player_spd_scale(id, spd_scale):
+	rpc_unreliable_id(1, "apply_debuff_player", id)
+
+## Debuffs
+master func update_player_spd_scale(id, spd_scale):
 	print("hiiiiiii")
 	players_info[id].spd_scaling = spd_scale
 
-remote func apply_spd_scaling_player(spd_scale):
-	var sender_id = get_tree().get_rpc_sender_id()
-	for player_id in connected_players:
-		if player_id != sender_id:
-			print("Step 2")
-			rpc_unreliable_id(player_id, "update_player_spd_scale", sender_id, spd_scale)
-	
 func _on_spd_scaling_changed(spd_scale):
 	print("Step 1")
 	rpc_unreliable_id(1, "apply_spd_scaling_player", spd_scale)
+
+## Estados
+master func update_player_state(id, state, truthy_value):
+	var format_state = "parameters/conditions/%s"
+	var actual_state = format_state % state
+	players_info[id].animation_tree.set(actual_state, truthy_value)
+
+func _on_state_changed(state, truthy_value):
+	rpc_unreliable_id(1, "apply_state_player", state, truthy_value)
+	
+master func update_player_revive(id, pos):
+	players_info[id].position = pos
+	players_info[id].animation_tree.set_active(false)
+	players_info[id].animation_tree.set_active(true)
+	players_info[id]._on_Player_revive()
+
+func _on_revive():
+	rpc_id(1, "apply_revive_player")

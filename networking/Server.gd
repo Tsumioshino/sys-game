@@ -97,11 +97,29 @@ func configure_player(player_id):
 	return player
 	
 func connect_signals(player):
+	player.connect("direction_changed", self, "_on_direction_changed")
 	player.connect("position_changed", self, "_on_position_changed") #!!!!
 	player.connect("apply_spd_negative", self, "_on_debuff_apply") #!!!!
 	player.connect("spd_scaling_changed", self, "_on_spd_scaling_changed") #!!!!
-	
+	player.connect("state_changed", self, "_on_state_changed") #!!!!
+	player.connect("revive", self, "_on_revive") #!!!!
 # Atributos 
+## Direcao
+remotesync func update_player_dir(id, old_dir, new_dir):
+	print("okish")
+	players_info[id]._on_Player_direction_changed(old_dir, new_dir)
+
+remotesync func change_player_dir(old_pos, new_pos):
+	var sender_id = get_tree().get_rpc_sender_id()
+	for player_id in connected_players:
+		if player_id != sender_id:
+			rpc_unreliable_id(player_id, "update_player_dir", sender_id, old_pos, new_pos)
+
+func _on_direction_changed(old_pos, new_pos):
+	print("huh")
+	rpc_unreliable_id(1, "change_player_dir", old_pos, new_pos)
+	
+## Posicao
 remotesync func update_player_pos(id, pos):
 	players_info[id].position = pos
 	
@@ -145,3 +163,37 @@ remotesync func apply_spd_scaling_player(spd_scale):
 func _on_spd_scaling_changed(spd_scale):
 	print("Step 1")
 	rpc_unreliable_id(1, "apply_spd_scaling_player", spd_scale)
+
+## Estados
+remotesync func update_player_state(id, state, truthy_value):
+	var format_state = "parameters/conditions/%s"
+	var actual_state = format_state % state
+	players_info[id].animation_tree.set(actual_state, truthy_value)
+
+remotesync func apply_state_player(state, truthy_value):
+	var sender_id = get_tree().get_rpc_sender_id()
+	for player_id in connected_players:
+		if player_id != sender_id:
+			rpc_unreliable_id(player_id, "update_player_state", sender_id, state, truthy_value)
+	
+func _on_state_changed(state, truthy_value):
+	rpc_unreliable_id(1, "apply_state_player", state, truthy_value)
+	
+remotesync func update_player_revive(id, pos):
+	print("welp")
+	players_info[id].position = pos
+	players_info[id].animation_tree.set_active(false)
+	players_info[id].animation_tree.set_active(true)
+	players_info[id]._on_Player_revive()
+	
+remotesync func apply_revive_player():
+	var sender_id = get_tree().get_rpc_sender_id()
+	var counter = players_done.find(sender_id) + 1
+	var position = get_node("/root/Main/GameLogic/World/Spawn/%d" % counter).position
+	for player_id in connected_players:
+		rpc_id(player_id, "update_player_revive", sender_id, position)
+	
+func _on_revive():
+	print("????")
+	rpc_id(1, "apply_revive_player")
+	

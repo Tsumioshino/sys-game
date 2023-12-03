@@ -18,6 +18,7 @@ var spd = 300 # Velocity * spd_scaling
 signal position_changed(new_pos)
 signal apply_spd_negative
 signal spd_scaling_changed(new_spd)
+signal state_changed(new_state)
 
 func _on_Player_spd_scaling_changed(new_spd):
 	spd = 100 * new_spd	if new_spd > 0 else 0
@@ -33,6 +34,9 @@ var timeratk = Timer.new()
 
 func _ready():
 	connect("spd_scaling_changed", self, "_on_Player_spd_scaling_changed")
+	connect("health_depleted", self, "_on_Player_health_depleted")
+	connect("direction_changed", self, "_on_Player_direction_changed")
+		
 	animation_tree.set_animation_player(player_class[class_count]) 
 	scale.x *= -1 if look_at == Direction.LEFT else 1
 	animation_tree.set("parameters/conditions/not_movement", true)
@@ -66,6 +70,7 @@ func _attack_mechanic_handler():
 		if Input.is_action_just_pressed("attack"):
 			if timeratk.is_stopped():
 				animation_tree.set("parameters/conditions/consecutive_atk", false)
+				emit_signal("state_changed", "consecutive_atk", false)
 				consecutiveKeyPresses = 0
 				timeratk.start(0.4)
 				timeratk.set_one_shot(true)
@@ -74,12 +79,15 @@ func _attack_mechanic_handler():
 			else:
 				consecutiveKeyPresses = 0
 		animation_tree.set("parameters/conditions/attack", true)
+		emit_signal("state_changed", "attack", true)
 		if consecutiveKeyPresses >= desiredKeyPresses:
 			animation_tree.set("parameters/conditions/consecutive_atk", true)
-
+			emit_signal("state_changed", "consecutive_atk", true)
 	else:
 		animation_tree.set("parameters/conditions/attack", false)
 		animation_tree.set("parameters/conditions/consecutive_atk", false)
+		emit_signal("state_changed", "attack", false)
+		emit_signal("state_changed", "consecutive_atk", false)
 	
 
 var timerdash = Timer.new()
@@ -101,20 +109,25 @@ func activate_dash():
 	tween.tween_property(self, "velocity", velocity, 0)
 	tween.tween_property(self, "velocity", 0, dash_duration)
 	animation_tree.set("parameters/conditions/dash", true)
+	emit_signal("state_changed", "dash", true)
 	
 	
 func _dodge_handler():
 	if Input.is_action_just_pressed("dodge") and $DodgeTimer.get_time_left() <= 0:
 		$DodgeTimer.start(5)
 		animation_tree.set("parameters/conditions/dodge", true)
+		emit_signal("state_changed", "dodge", true)
 	else:
 		animation_tree.set("parameters/conditions/dodge", false)
+		emit_signal("state_changed", "dodge", false)
 
 func _defense_handler():
 	if Input.is_action_pressed("defend"):
 		animation_tree.set("parameters/conditions/defense", true)
+		emit_signal("state_changed", "defense", true)
 	else:
 		animation_tree.set("parameters/conditions/defense", false)
+		emit_signal("state_changed", "defense", false)
 
 
 func _dash_handler(input_direction):
@@ -122,6 +135,7 @@ func _dash_handler(input_direction):
 		if !animation_tree.get("parameters/conditions/dash"):
 			if timerdash.is_stopped():
 				animation_tree.set("parameters/conditions/dash", false)
+				emit_signal("state_changed", "dash", false)
 				consecutiveKeyPresses2 = 0
 				timerdash.start(0.4)
 				timerdash.set_one_shot(true)
@@ -129,15 +143,18 @@ func _dash_handler(input_direction):
 				consecutiveKeyPresses2 +=  1
 			else:
 				animation_tree.set("parameters/conditions/dash", false)
+				emit_signal("state_changed", "dash", false)
 				consecutiveKeyPresses2 = 0
 			if consecutiveKeyPresses2 >= desiredKeyPresses2:
 				activate_dash()
 	else:
 		animation_tree.set("parameters/conditions/dash", false)
+		emit_signal("state_changed", "dash", false)
 		
 signal direction_changed(old_value, new_value)
 
-func _on_Player_direction_changed(old_direction, new_direction):
+remote func _on_Player_direction_changed(old_direction, new_direction):
+	print("hi")
 	if new_direction.x > 0:
 		if look_at != Direction.RIGHT:
 			scale.x *= -1
@@ -156,10 +173,14 @@ func _movement_mechanic_handler():
 		direction = input_direction 
 		
 		animation_tree.set("parameters/conditions/not_movement", false)
+		emit_signal("state_changed", "not_movement", false)
 		animation_tree.set("parameters/conditions/movement", true)
+		emit_signal("state_changed", "movement", true)
 	else:
 		animation_tree.set("parameters/conditions/not_movement", true)
+		emit_signal("state_changed", "not_movement", true)
 		animation_tree.set("parameters/conditions/movement", false)
+		emit_signal("state_changed", "movement", false)
 
 		if animation_tree.get("parameters/conditions/dash"):
 			activate_dash()
@@ -167,7 +188,7 @@ func _movement_mechanic_handler():
 
 func _input(_event):
 	if is_network_master():
-		#_class_swap_mechanic_handler()
+		_class_swap_mechanic_handler()
 		_attack_mechanic_handler()
 		_defense_handler()
 		_defense_handler()
@@ -182,8 +203,6 @@ func was_any_input_action_just_pressed(actions):
 
 func _physics_process(_delta):
 	if is_network_master():
-		print(spd)
-		print(spd_scaling)
 		var input_direction = _movement_mechanic_handler()
 		velocity = input_direction * spd
 		emit_signal("position_changed", global_position)
@@ -191,7 +210,9 @@ func _physics_process(_delta):
 
 	
 func take_damage(dmg):
+	print("this hurts")
 	current_health -= dmg
+	print(current_health)
 	if current_health <= 0:
 		emit_signal("health_depleted")
 		
@@ -239,28 +260,29 @@ remote func apply_effect_speed_negative():
 	$Effects.add_child(spd_debuff)
 	player_debuffs.append(spd_debuff)
 
-
+signal revive
 func _on_Player_health_depleted():
-	set_process_input(false)
-	animation_tree.set("parameters/conditions/death", true)
-	rpc('_die')
-	
-sync func _die():
-	$RespawnTimer.start()
-	set_physics_process(false)
-#	for child in get_children():
-#		if "disabled" in child:
-#			child.disabled = true
+	if is_network_master():
+		set_process_input(false)
+		animation_tree.set("parameters/conditions/death", true)
+		emit_signal("state_changed", "death", true)
+		set_physics_process(false)
+		$RespawnTimer.start()
+
 
 func _on_RespawnTimer_timeout():
-	print("i am back")
-	set_physics_process(true)
-	animation_tree.set("parameters/conditions/death", false)
-#	for child in get_children():
-#		if "disabled" in child:
-#			child.disabled = false
-	current_health = max_health
+	if is_network_master():
+		set_process_input(true)
+		set_physics_process(true)
+#		animation_tree.set_active(false)
+#		animation_tree.set_active(true)
+		animation_tree.set("parameters/conditions/death", false)
+		emit_signal("state_changed", "death", false)
+		emit_signal("revive")
 
+
+mastersync func _on_Player_revive():
+	current_health = max_health
 # A habilidade 'Sangue de Guerreiro' 
 # deve ser uma habilidade única da classe Guerreiro
 # classificada como passiva, self-target, 

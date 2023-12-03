@@ -157,7 +157,7 @@ states/strong_slash/position = Vector2( 504, 139 )
 transitions = [ "idle", "slash", SubResource( 45 ), "slash", "idle", SubResource( 46 ), "idle", "move", SubResource( 48 ), "move", "idle", SubResource( 49 ), "move", "slash", SubResource( 50 ), "slash", "move", SubResource( 51 ), "idle", "dead", SubResource( 53 ), "slash", "dead", SubResource( 54 ), "move", "dead", SubResource( 55 ), "slash", "strong_slash", SubResource( 76 ), "strong_slash", "idle", SubResource( 77 ), "strong_slash", "move", SubResource( 78 ), "idle", "dash", SubResource( 82 ), "dash", "idle", SubResource( 83 ), "move", "dash", SubResource( 85 ), "dash", "move", SubResource( 86 ), "move", "dodge", SubResource( 88 ), "dodge", "move", SubResource( 89 ), "idle", "dodge", SubResource( 90 ), "dodge", "idle", SubResource( 91 ), "idle", "defend", SubResource( 93 ), "defend", "idle", SubResource( 94 ), "move", "defend", SubResource( 95 ), "defend", "move", SubResource( 96 ) ]
 start_node = "idle"
 end_node = "dead"
-graph_offset = Vector2( -56.5332, 338.278 )
+graph_offset = Vector2( -306.038, 240.733 )
 
 [sub_resource type="AnimationNodeStateMachinePlayback" id=44]
 
@@ -750,6 +750,7 @@ one_shot = true
 
 [node name="RespawnTimer" type="Timer" parent="."]
 wait_time = 3.0
+one_shot = true
 
 [connection signal="area_entered" from="SpritesAnimacao/AtaqueHit" to="." method="_on_AtaqueHit_area_entered"]
 [connection signal="body_entered" from="SpritesAnimacao/AtaqueHit" to="." method="_on_AtaqueHit_body_entered"]
