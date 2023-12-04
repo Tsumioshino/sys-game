@@ -760,6 +760,10 @@ rect_scale = Vector2( 1.75155, 1.85738 )
 align = 1
 valign = 1
 
+[node name="DodgeTimer" type="Timer" parent="."]
+wait_time = 5.0
+one_shot = true
+
 [connection signal="area_entered" from="SpritesAnimacao/AtaqueHit" to="." method="_on_AtaqueHit_area_entered"]
 [connection signal="body_entered" from="SpritesAnimacao/AtaqueHit" to="." method="_on_AtaqueHit_body_entered"]
 [connection signal="body_entered" from="SpritesAnimacao/AtaqueHit2" to="." method="_on_AtaqueHit2_body_entered"]
